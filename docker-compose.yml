@@ -1,0 +1,18 @@
+services:
+  sqlserver:
+    # x86-64 SQL Server 2022. On arm64 hosts (Apple Silicon, Windows-on-ARM)
+    # this image runs under emulation; prefer the SQLite fallback there.
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: saas-agent-sample-sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      # Source from .env (see .env.example). Never commit real credentials.
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD:?MSSQL_SA_PASSWORD must be set in .env}"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+volumes:
+  sqlserver-data:

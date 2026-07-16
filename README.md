@@ -53,11 +53,41 @@ flowchart LR
 ## Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
-- A local SQL Server for the state store (wired up in a later PR):
-  - **Docker** (cross-platform, x86-64): `mcr.microsoft.com/mssql/server`, or
-  - **Windows**: SQL Server **LocalDB** (no Docker), or
-  - **Apple Silicon (macOS)**: SQLite fallback (documented later).
+- A database for the state store — choose based on your host architecture:
+  - **x86-64 (Linux / macOS Intel / Windows x64)**: **SQL Server** via
+    [Docker](https://www.docker.com/) using the bundled `docker-compose.yml`
+    (image `mcr.microsoft.com/mssql/server:2022-latest`). SQL Server is the
+    **authoritative database**; its schema is version-controlled via EF Core
+    migrations.
+  - **arm64 (Apple Silicon, Windows-on-ARM, Linux arm64)**: **SQLite** via the
+    `Microsoft.EntityFrameworkCore.Sqlite` provider (schema mirrored with
+    `EnsureCreated`, no migrations). Use this for local development only.
+  - **Windows x64 (no Docker)**: SQL Server **LocalDB** works with the same
+    connection-string switch as full SQL Server.
 - The Fulfillment API Emulator for the synthetic L2 walkthrough (wired up later).
+
+### Starting the local SQL Server (x86-64)
+
+```bash
+cp .env.example .env       # then edit MSSQL_SA_PASSWORD to a strong value
+docker compose up -d sqlserver
+```
+
+### Database provider switch
+
+Set the following configuration keys (e.g. in `appsettings.Development.json`
+or via environment variables) to select the provider:
+
+| `Database:Provider` | `Database:ConnectionString` example |
+| --- | --- |
+| `SqlServer` (default) | `Server=localhost,1433;Database=SaasAgentSample;User Id=sa;Password=...;TrustServerCertificate=True;` |
+| `Sqlite` | `Data Source=./saas-agent-sample.db` |
+| `InMemory` | *(ignored — used only for tests)* |
+
+On startup the SQL Server path runs `DbContext.Database.Migrate()` (authoritative
+migration in `src/SaaSAgentSample.Data/Persistence/Migrations/`). The SQLite
+path runs `DbContext.Database.EnsureCreated()` so arm64 developers can iterate
+without maintaining a separate migration history.
 
 ## Build & test
 
@@ -66,10 +96,22 @@ dotnet build SaaSAgentSample.slnx
 dotnet test SaaSAgentSample.slnx
 ```
 
+The default test run only exercises the SQLite / InMemory paths. To also run
+the SQL Server integration tests locally, start the compose service above and
+export a connection string:
+
+```bash
+export SQL_SERVER_CONNECTION='Server=localhost,1433;Database=SaasAgentSample;User Id=sa;Password=<your MSSQL_SA_PASSWORD>;TrustServerCertificate=True;'
+dotnet test SaaSAgentSample.slnx
+```
+
+CI runs both lanes: a default SQLite/InMemory job and a `build-test-sqlserver`
+job that uses the same 2022 image via a GitHub Actions service container.
+
 ## Status (incremental — one logical change per PR)
 
 - [x] **PR1** — solution scaffold (.NET 10), CI, README skeleton
-- [ ] **PR2** — authoritative state store (EF Core + SQL Server)
+- [x] **PR2** — authoritative state store (EF Core; SQL Server migration + SQLite `EnsureCreated`)
 - [ ] **PR3** — Fulfillment/Operations v2 client + webhook validation
 - [ ] **PR4** — buyer SSO landing (Resolve → explicit-confirm Activate)
 - [ ] **PR5** — connection webhook endpoint
