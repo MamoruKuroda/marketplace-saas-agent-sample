@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SaaSAgentSample.Core/SaaSAgentSample.Core.csproj" />
+    <Project Path="src/SaaSAgentSample.Data/SaaSAgentSample.Data.csproj" />
+    <Project Path="src/SaaSAgentSample.Fulfillment/SaaSAgentSample.Fulfillment.csproj" />
+    <Project Path="src/SaaSAgentSample.Web/SaaSAgentSample.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SaaSAgentSample.Tests/SaaSAgentSample.Tests.csproj" />
+  </Folder>
+</Solution>
