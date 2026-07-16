@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\SaaSAgentSample.Core\SaaSAgentSample.Core.csproj" />
+    <ProjectReference Include="..\SaaSAgentSample.Data\SaaSAgentSample.Data.csproj" />
+    <ProjectReference Include="..\SaaSAgentSample.Fulfillment\SaaSAgentSample.Fulfillment.csproj" />
+  </ItemGroup>
+
+</Project>
