@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\src\SaaSAgentSample.Core\SaaSAgentSample.Core.csproj" />
     <ProjectReference Include="..\..\src\SaaSAgentSample.Data\SaaSAgentSample.Data.csproj" />
     <ProjectReference Include="..\..\src\SaaSAgentSample.Fulfillment\SaaSAgentSample.Fulfillment.csproj" />
+    <ProjectReference Include="..\..\src\SaaSAgentSample.Web\SaaSAgentSample.Web.csproj" />
   </ItemGroup>
 
 </Project>

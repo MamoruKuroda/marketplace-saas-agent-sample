@@ -6,4 +6,8 @@
     <ProjectReference Include="..\SaaSAgentSample.Fulfillment\SaaSAgentSample.Fulfillment.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Identity.Web" Version="4.13.1" />
+  </ItemGroup>
+
 </Project>
