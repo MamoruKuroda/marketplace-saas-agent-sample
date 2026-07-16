@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.10" />
     <PackageReference Include="xunit" Version="2.9.3" />
@@ -19,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SaaSAgentSample.Core\SaaSAgentSample.Core.csproj" />
     <ProjectReference Include="..\..\src\SaaSAgentSample.Data\SaaSAgentSample.Data.csproj" />
+    <ProjectReference Include="..\..\src\SaaSAgentSample.Fulfillment\SaaSAgentSample.Fulfillment.csproj" />
   </ItemGroup>
 
 </Project>
