@@ -14,6 +14,7 @@ builder.Services.AddSaasStateStore(builder.Configuration);
 builder.Services.AddFulfillmentClient(builder.Configuration);
 builder.Services.AddScoped<LandingService>();
 builder.Services.AddScoped<WebhookService>();
+builder.Services.AddScoped<AdminService>();
 
 // Buyer sign-in. In production, require a multitenant Microsoft Entra sign-in (work/school
 // + personal accounts; authority "common"). Locally (emulator/dev) set

@@ -1,0 +1,62 @@
+@page "/admin/{id:guid}"
+@model SaaSAgentSample.Web.Pages.Admin.DetailModel
+@{
+    Layout = null;
+    var s = Model.Subscription;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Subscription detail</title>
+    <style>
+        body { font-family: system-ui, "Segoe UI", Arial, sans-serif; max-width: 680px; margin: 2rem auto; padding: 0 1rem; color: #1b1b1f; }
+        .card { border: 1px solid #ddd; border-radius: 8px; padding: 1.25rem; margin: 1rem 0; }
+        dl { display: grid; grid-template-columns: auto 1fr; gap: .3rem .9rem; }
+        dt { color: #666; }
+        code { background: #f3f3f3; padding: .1rem .3rem; border-radius: 4px; }
+        button { background: #0b5cad; color: #fff; border: 0; border-radius: 6px; padding: .6rem 1.1rem; font-size: 1rem; cursor: pointer; }
+        .muted { color: #666; }
+        .banner { background: #eef6ff; border: 1px solid #cfe4fb; border-radius: 6px; padding: .6rem .9rem; }
+    </style>
+</head>
+<body>
+    <p><a href="/admin">&larr; All subscriptions</a></p>
+    <h1>Subscription detail</h1>
+
+    @if (Model.Message is not null)
+    {
+        <p class="banner">@Model.Message</p>
+    }
+
+    @if (s is not null)
+    {
+        <div class="card">
+            <dl>
+                <dt>Marketplace subscription</dt><dd><code>@s.MarketplaceSubscriptionId</code></dd>
+                <dt>Offer</dt><dd>@s.OfferId</dd>
+                <dt>Plan</dt><dd>@s.PlanId</dd>
+                <dt>State</dt><dd><strong>@s.State</strong></dd>
+                <dt>Created (UTC)</dt><dd>@s.CreatedAt.UtcDateTime.ToString("u")</dd>
+                <dt>Updated (UTC)</dt><dd>@s.UpdatedAt.UtcDateTime.ToString("u")</dd>
+            </dl>
+
+            @if (Model.CanActivate)
+            {
+                <form method="post" action="?handler=Activate">
+                    @Html.AntiForgeryToken()
+                    <p class="muted">Activation calls the Fulfillment Activate API and starts billing. Confirm before proceeding.</p>
+                    <button type="submit">Activate subscription</button>
+                </form>
+            }
+            else
+            {
+                <p class="muted">No actions available from the <strong>@s.State</strong> state.</p>
+            }
+        </div>
+    }
+
+    <p class="muted">Experimental teaching sample - not for production use.</p>
+</body>
+</html>

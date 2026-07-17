@@ -31,6 +31,22 @@ public sealed class EfSubscriptionRepository : ISubscriptionRepository
             cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Subscription>> ListAsync(CancellationToken cancellationToken = default)
+    {
+        // Order client-side: SQLite (the arm64/dev fallback provider) cannot ORDER BY a
+        // DateTimeOffset column, so sorting in the database would throw on that provider.
+        // The subscription table is small, so a client-side sort is acceptable and keeps
+        // the behavior identical across SQL Server, SQLite, and InMemory.
+        var items = await _db.Subscriptions
+            .AsNoTracking()
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return items
+            .OrderByDescending(s => s.CreatedAt)
+            .ToList();
+    }
+
     public async Task AddAsync(Subscription subscription, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(subscription);

@@ -13,6 +13,12 @@ public interface ISubscriptionRepository
         string marketplaceSubscriptionId,
         CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Returns all subscriptions, most recently created first. Read-only projection for
+    /// the publisher admin views; callers must not mutate the returned aggregates.
+    /// </summary>
+    Task<IReadOnlyList<Subscription>> ListAsync(CancellationToken cancellationToken = default);
+
     Task AddAsync(Subscription subscription, CancellationToken cancellationToken = default);
 
     Task SaveChangesAsync(CancellationToken cancellationToken = default);

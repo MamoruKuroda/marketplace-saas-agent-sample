@@ -19,6 +19,9 @@ internal sealed class InMemorySubscriptionRepository : ISubscriptionRepository
     public Task<Subscription?> GetByMarketplaceSubscriptionIdAsync(string marketplaceSubscriptionId, CancellationToken cancellationToken = default)
         => Task.FromResult(_items.FirstOrDefault(s => s.MarketplaceSubscriptionId == marketplaceSubscriptionId));
 
+    public Task<IReadOnlyList<Subscription>> ListAsync(CancellationToken cancellationToken = default)
+        => Task.FromResult<IReadOnlyList<Subscription>>(_items.OrderByDescending(s => s.CreatedAt).ToList());
+
     public Task AddAsync(Subscription subscription, CancellationToken cancellationToken = default)
     {
         _items.Add(subscription);
