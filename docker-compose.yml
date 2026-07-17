@@ -14,5 +14,25 @@ services:
     volumes:
       - sqlserver-data:/var/opt/mssql
 
+  emulator:
+    # Microsoft Commercial Marketplace SaaS Fulfillment API Emulator - a token-free stand-in for
+    # the marketplace, used to drive the L2 walkthrough (see docs/l2-demo.md). There is no
+    # published image, so it is built from source, pinned to a reviewed commit. It is a Node app,
+    # so it runs natively on arm64 (unlike the SQL Server image above).
+    build:
+      context: "https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator.git#bb7bc6317128605b2f777ebe1c9969198733ae85"
+      dockerfile: docker/Dockerfile
+    container_name: saas-agent-sample-emulator
+    ports:
+      - "8080:80"
+    environment:
+      # The emulator (Microsoft's stand-in) POSTs connection webhooks to this app. The app runs on
+      # the host via `dotnet run`; host.docker.internal lets the container reach it. Adjust the port
+      # to match the app's listening URL (default http://localhost:5134).
+      WEBHOOK_URL: "http://host.docker.internal:5134/api/webhook"
+      PUBLISHER_ID: "FourthCoffee"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 volumes:
   sqlserver-data:

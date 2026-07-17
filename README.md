@@ -108,16 +108,27 @@ dotnet test SaaSAgentSample.slnx
 CI runs both lanes: a default SQLite/InMemory job and a `build-test-sqlserver`
 job that uses the same 2022 image via a GitHub Actions service container.
 
+## L2 walkthrough (synthetic fulfillment lifecycle)
+
+Prove the fulfillment plumbing end to end — Resolve → Activate → webhook → state —
+without a real purchase, using a token-free emulator as Microsoft's stand-in. An
+automated test drives the full lifecycle over real HTTP (runs in CI, no Docker);
+a manual path runs the actual emulator in Docker. See **[docs/l2-demo.md](docs/l2-demo.md)**.
+
+```bash
+dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
+```
+
 ## Status (incremental — one logical change per PR)
 
 - [x] **PR1** — solution scaffold (.NET 10), CI, README skeleton
 - [x] **PR2** — authoritative state store (EF Core; SQL Server migration + SQLite `EnsureCreated`)
-- [ ] **PR3** — Fulfillment/Operations v2 client + webhook validation
-- [ ] **PR4** — buyer SSO landing (Resolve → explicit-confirm Activate)
-- [ ] **PR5** — connection webhook endpoint
-- [ ] **PR6** — minimal publisher admin
-- [ ] **PR7** — tool boundary (OpenAPI + tool descriptors)
-- [ ] **PR8** — synthetic L2 proof via the Emulator
+- [x] **PR3** — Fulfillment/Operations v2 client + webhook validation
+- [x] **PR4** — buyer SSO landing (Resolve → explicit-confirm Activate)
+- [x] **PR5** — connection webhook endpoint
+- [x] **PR6** — minimal publisher admin
+- [x] **PR7** — tool boundary (OpenAPI + tool descriptors)
+- [x] **PR8** — synthetic L2 proof via the Emulator
 - [ ] **PR9** — README + deploy docs
 - [ ] **PR10** — buyer & publisher (SDC/ISV) experience-flow walkthrough (issue #2)
 
