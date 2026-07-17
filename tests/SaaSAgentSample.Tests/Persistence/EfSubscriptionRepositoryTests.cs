@@ -133,4 +133,26 @@ public class EfSubscriptionRepositoryTests : IDisposable
             Assert.Equal(SubscriptionState.Suspended, sub!.State);
         }
     }
+
+    [Fact]
+    public async Task ListAsync_returns_all_rows_newest_first()
+    {
+        await using (var db = new SaasDbContext(_options))
+        {
+            var repo = new EfSubscriptionRepository(db);
+            await repo.AddAsync(new Subscription(Guid.NewGuid(), "mkt-older", "offer", "plan", Now));
+            await repo.AddAsync(new Subscription(Guid.NewGuid(), "mkt-newer", "offer", "plan", Now.AddHours(1)));
+            await repo.SaveChangesAsync();
+        }
+
+        await using (var db = new SaasDbContext(_options))
+        {
+            var repo = new EfSubscriptionRepository(db);
+            var all = await repo.ListAsync();
+
+            Assert.Equal(2, all.Count);
+            Assert.Equal("mkt-newer", all[0].MarketplaceSubscriptionId); // ordered by CreatedAt desc
+            Assert.Equal("mkt-older", all[1].MarketplaceSubscriptionId);
+        }
+    }
 }
