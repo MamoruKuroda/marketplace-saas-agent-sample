@@ -37,6 +37,10 @@ else
 
 builder.Services.AddRazorPages();
 
+// OpenAPI document (/openapi/v1.json) describes the language-agnostic tool boundary so an
+// agent runtime can bind to it and it can be promoted to a Foundry OpenAPI tool later.
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
 
 // Ensure the local schema exists (SQLite dev = EnsureCreated; SQL Server = migrations).
@@ -58,6 +62,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
 app.MapConnectionWebhook();
+app.MapAgentApi();
+app.MapOpenApi();
 
 app.Run();
+
+// Exposed so the integration test project can host the app via WebApplicationFactory<Program>.
+public partial class Program;
 
