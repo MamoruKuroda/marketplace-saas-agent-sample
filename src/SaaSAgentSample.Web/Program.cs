@@ -4,6 +4,7 @@ using Microsoft.Identity.Web;
 using SaaSAgentSample.Data.DependencyInjection;
 using SaaSAgentSample.Data.Persistence;
 using SaaSAgentSample.Fulfillment.DependencyInjection;
+using SaaSAgentSample.Web.Endpoints;
 using SaaSAgentSample.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSaasStateStore(builder.Configuration);
 builder.Services.AddFulfillmentClient(builder.Configuration);
 builder.Services.AddScoped<LandingService>();
+builder.Services.AddScoped<WebhookService>();
 
 // Buyer sign-in. In production, require a multitenant Microsoft Entra sign-in (work/school
 // + personal accounts; authority "common"). Locally (emulator/dev) set
@@ -54,6 +56,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
+app.MapConnectionWebhook();
 
 app.Run();
 
