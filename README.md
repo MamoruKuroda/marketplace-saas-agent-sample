@@ -64,7 +64,9 @@ flowchart LR
     `EnsureCreated`, no migrations). Use this for local development only.
   - **Windows x64 (no Docker)**: SQL Server **LocalDB** works with the same
     connection-string switch as full SQL Server.
-- The Fulfillment API Emulator for the synthetic L2 walkthrough (wired up later).
+- The Fulfillment API Emulator for the synthetic L2 walkthrough — see
+  [docs/l2-demo.md](docs/l2-demo.md). An automated proof runs in CI with no Docker;
+  the manual path runs the emulator container from `docker-compose.yml`.
 
 ### Starting the local SQL Server (x86-64)
 
@@ -108,6 +110,45 @@ dotnet test SaaSAgentSample.slnx
 CI runs both lanes: a default SQLite/InMemory job and a `build-test-sqlserver`
 job that uses the same 2022 image via a GitHub Actions service container.
 
+## Run the app
+
+```bash
+dotnet run --project src/SaaSAgentSample.Web
+```
+
+By default this uses the `Development` environment: SQLite state store, buyer
+sign-in disabled (`Landing:RequireAuthentication=false`), the Fulfillment client
+pointed at the local emulator, and unsigned webhook tokens accepted — so the whole
+flow works locally without Entra or a real purchase. Endpoints:
+
+| Path | What it is |
+| --- | --- |
+| `/?token=<purchase-token>` | Buyer SSO landing (Resolve → explicit-confirm Activate) |
+| `/admin`, `/admin/{id}` | Publisher admin (inspect + explicit-confirm Activate) |
+| `POST /api/webhook` | Connection webhook (server-side Entra JWT + Get Operation) |
+| `/api/subscriptions`, `/api/subscriptions/{id}` | Tool boundary — read state (JSON) |
+| `POST /api/subscriptions/{id}/activate` | Tool boundary — activate (`confirm=true` required) |
+| `/api/tools` | Tool descriptors (function-calling schemas) |
+| `/openapi/v1.json` | OpenAPI document for the tool boundary |
+
+## Configuration reference
+
+Bind from `appsettings*.json`, environment variables (`__` for nested keys), or
+App Service settings. Secrets are **placeholders only** — never commit real values.
+
+| Key | Purpose | Local default |
+| --- | --- | --- |
+| `Database:Provider` | `SqlServer` \| `Sqlite` \| `InMemory` | `Sqlite` |
+| `Database:ConnectionString` | State store connection | SQLite file |
+| `Landing:RequireAuthentication` | Require Entra sign-in for landing/admin | `false` (dev) |
+| `AzureAd:*` | Buyer sign-in app (multitenant; authority `common`) | placeholder client id |
+| `Fulfillment:BaseUrl` | Fulfillment API base (incl. `/api`) | emulator |
+| `Fulfillment:ApiVersion` | API version | `2018-08-31` |
+| `Fulfillment:Webhook:Audience` | Expected JWT audience = publisher app client id | placeholder |
+| `Fulfillment:Webhook:ExpectedAppId` | Expected `appid`/`azp` claim | public Marketplace app id |
+| `Fulfillment:Webhook:MetadataAddress` | Entra OpenID metadata for signing keys | — |
+| `Fulfillment:Webhook:RequireSignedToken` | Enforce JWT signature (**true in prod**) | `false` (dev) |
+
 ## L2 walkthrough (synthetic fulfillment lifecycle)
 
 Prove the fulfillment plumbing end to end — Resolve → Activate → webhook → state —
@@ -129,7 +170,7 @@ dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 - [x] **PR6** — minimal publisher admin
 - [x] **PR7** — tool boundary (OpenAPI + tool descriptors)
 - [x] **PR8** — synthetic L2 proof via the Emulator
-- [ ] **PR9** — README + deploy docs
+- [x] **PR9** — README + deploy docs
 - [ ] **PR10** — buyer & publisher (SDC/ISV) experience-flow walkthrough (issue #2)
 
 ## Guardrails (non-negotiable)
@@ -141,14 +182,23 @@ dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 
 ## Deploy
 
-Target: Azure **App Service** + **Azure SQL** (region **West US 3**). Provisioning is
-**human-authorized only** and is not performed by the agent. Details land in a later PR.
+Target: Azure **App Service** (.NET 10) + **Azure SQL** in **West US 3**, with the app
+connecting to the database **passwordless** via managed identity (no connection-string
+secret). Provisioning is **human-authorized only** and is **not** performed by the agent.
 
-## Sources (fetched, HTTP 200 on 2026-07-16)
+The full walkthrough — provision, managed-identity SQL access, app settings, deploy, and
+wiring the marketplace offer's landing page + connection webhook — is in
+**[docs/deploy.md](docs/deploy.md)**.
+
+## Sources (fetched, HTTP 200 on 2026-07-18)
 
 - SaaS fulfillment APIs: <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-apis>
 - SaaS subscription life cycle: <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-life-cycle>
 - Implementing a webhook (JWT validation + Get Operation): <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-webhook>
+- Register a SaaS application: <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-registration>
+- Deploy an ASP.NET web app to App Service: <https://learn.microsoft.com/en-us/azure/app-service/quickstart-dotnetcore>
+- Connect .NET apps to Azure SQL with managed identity: <https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-sql-database>
+- What is Azure SQL Database: <https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview?view=azuresql>
 - .NET lifecycle (.NET 10 supported to 2028-11-14): <https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-and-net-core>
 
 ## License
