@@ -40,7 +40,7 @@ flowchart LR
     LP --- DB
     WH --- DB
     ADM --- DB
-    TB -. LLM binds here in v0.1 .-> ADM
+    TB -.->|"LLM binds here in v0.1"| ADM
 ```
 
 ## Solution layout
