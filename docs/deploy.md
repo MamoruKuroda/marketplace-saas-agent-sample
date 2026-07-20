@@ -4,12 +4,12 @@
 > walkthrough; run it yourself after reviewing. All identifiers below are **placeholders** —
 > never commit real tenant, subscription, publisher, or app IDs, or any secret.
 
-Target topology for v0 (minimal footprint):
+Target topology for v0 (initial version, minimal footprint):
 
 - **Azure App Service** (Linux, .NET 10) hosts `SaaSAgentSample.Web`.
 - **Azure SQL Database** is the authoritative state store.
 - **Managed identity** connects App Service → Azure SQL **passwordless** (no connection-string secret).
-- Region: **West US 3** (prior L1/L2 provisioning experience).
+- Region: **West US 3** (chosen for prior integration testing in this sample).
 
 ```mermaid
 flowchart LR

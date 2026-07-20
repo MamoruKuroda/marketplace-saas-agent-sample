@@ -2,15 +2,17 @@
 
 > **Experimental teaching sample — work in progress.** An agent-ready reference for
 > publishing and operating a **Microsoft Commercial Marketplace SaaS Offer** at
-> **Tier-1 (flat-rate)** on **.NET 10**. Not for production use.
+> **Tier-1 flat-rate** (a single fixed monthly price per subscription — no metered billing,
+> no per-user quantity) on **.NET 10**. Not for production use.
 
 > 🌐 日本語版の README は **[README.ja.md](README.ja.md)** をご覧ください。
 
 Agent-assisted SaaS Offer fulfillment: a buyer **SSO landing page**
 (Resolve → explicit-confirm Activate), a **connection webhook**, an **authoritative
 subscription-state store**, and a **minimal publisher admin** — behind a language-agnostic
-**tool boundary** so an LLM/agent layer can be added later without rewriting the
-fulfillment plane. The official
+**tool boundary** (an OpenAPI surface that an LLM or agent can call into later) so a
+model layer can be added without rewriting the **fulfillment plane** (the publisher-side
+implementation: landing page, webhook, and state store). The official
 [SaaS Accelerator](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator) (MIT)
 is used as a reference implementation (not a fork), and the
 [Fulfillment API Emulator](https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator) (MIT)
@@ -19,11 +21,23 @@ drives Resolve/Activate/webhook with no real purchase.
 New to marketplace SaaS? Start with the **[experience walkthrough](docs/walkthrough.md)** — a
 plain-language map of who does what (buyer & publisher) and how it maps to this sample.
 
-## Architecture (v0 — runs entirely locally)
+## Terminology
+
+| Term | Meaning |
+| --- | --- |
+| **Tier-1 flat-rate** | A Microsoft pricing model: a single fixed monthly price per subscription (no metered billing, no per-user quantity). |
+| **Fulfillment plane** | The publisher-side SaaS implementation: landing page, connection webhook, and subscription state store. |
+| **Tool boundary** | An OpenAPI surface (+ tool descriptors) exposing publisher actions in a format an LLM or agent can call into. |
+| **v0** | The initial version of this sample — all components run locally, no LLM agent loop yet. |
+| **v0.1** | Planned next milestone: adds the LLM agent loop on top of the v0 base. |
+| **L2 walkthrough** | An integration-level end-to-end proof: the app talks to a fulfillment API over real HTTP (emulated) and exercises the full subscription lifecycle. |
+| **Synthetic L2** | The automated in-repo variant: an HTTP stub replaces the Docker-based emulator, so no Docker is required. |
+
+## Architecture (v0 — initial version, runs entirely locally)
 
 ```mermaid
 flowchart LR
-    subgraph PC["Local machine (v0 L2 walkthrough)"]
+    subgraph PC["Local machine (v0 — end-to-end test walkthrough)"]
         EMU["Fulfillment API Emulator<br/>(stands in for Microsoft, token-free)"]
         subgraph WEB["SaaSAgentSample.Web"]
             LP["Buyer SSO Landing<br/>Resolve to explicit-confirm Activate"]
@@ -40,7 +54,7 @@ flowchart LR
     LP --- DB
     WH --- DB
     ADM --- DB
-    TB -.->|"LLM binds here in v0.1"| ADM
+    TB -.->|"LLM binds here (planned: v0.1)"| ADM
 ```
 
 ## Solution layout
@@ -51,7 +65,7 @@ flowchart LR
 | `src/SaaSAgentSample.Data` | EF Core state store (single source of truth); SQL Server / Azure SQL |
 | `src/SaaSAgentSample.Fulfillment` | Fulfillment/Operations API v2 client + webhook validation (server-side) |
 | `src/SaaSAgentSample.Web` | Buyer SSO landing, connection webhook, publisher admin, tool boundary |
-| `tests/SaaSAgentSample.Tests` | Unit + integration (synthetic L2) tests |
+| `tests/SaaSAgentSample.Tests` | Unit + integration (synthetic end-to-end) tests — see [L2 walkthrough](#l2-walkthrough-synthetic-fulfillment-lifecycle) |
 
 ## Prerequisites
 
@@ -67,7 +81,9 @@ flowchart LR
     `EnsureCreated`, no migrations). Use this for local development only.
   - **Windows x64 (no Docker)**: SQL Server **LocalDB** works with the same
     connection-string switch as full SQL Server.
-- The Fulfillment API Emulator for the synthetic L2 walkthrough — see
+- The Fulfillment API Emulator for the end-to-end walkthrough (described below as the
+  "L2 walkthrough" — an integration-level proof that exercises the full subscription lifecycle
+  over HTTP using a token-free emulator as Microsoft's stand-in) — see
   [docs/l2-demo.md](docs/l2-demo.md). An automated proof runs in CI with no Docker;
   the manual path runs the emulator container from `docker-compose.yml`.
 
@@ -152,9 +168,12 @@ App Service settings. Secrets are **placeholders only** — never commit real va
 ## L2 walkthrough (synthetic fulfillment lifecycle)
 
 Prove the fulfillment plumbing end to end — Resolve → Activate → webhook → state —
-without a real purchase, using a token-free emulator as Microsoft's stand-in. An
-automated test drives the full lifecycle over real HTTP (runs in CI, no Docker);
-a manual path runs the actual emulator in Docker. See **[docs/l2-demo.md](docs/l2-demo.md)**.
+without a real purchase. **"L2"** here means an integration-level proof: the app runs
+against a fulfillment API over real HTTP (emulated, not a mock), exercising the full
+subscription lifecycle. The emulator stands in for Microsoft; no real purchase or Marketplace
+token is required. An automated test drives the full lifecycle over real HTTP (runs in CI,
+no Docker); a manual path runs the actual emulator in Docker. See
+**[docs/l2-demo.md](docs/l2-demo.md)**.
 
 ```bash
 dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
