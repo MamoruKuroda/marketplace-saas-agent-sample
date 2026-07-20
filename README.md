@@ -4,6 +4,8 @@
 > publishing and operating a **Microsoft Commercial Marketplace SaaS Offer** at
 > **Tier-1 (flat-rate)** on **.NET 10**. Not for production use.
 
+> 🌐 日本語版の README は **[README.ja.md](README.ja.md)** をご覧ください。
+
 Agent-assisted SaaS Offer fulfillment: a buyer **SSO landing page**
 (Resolve → explicit-confirm Activate), a **connection webhook**, an **authoritative
 subscription-state store**, and a **minimal publisher admin** — behind a language-agnostic
@@ -16,8 +18,6 @@ drives Resolve/Activate/webhook with no real purchase.
 
 New to marketplace SaaS? Start with the **[experience walkthrough](docs/walkthrough.md)** — a
 plain-language map of who does what (buyer & publisher) and how it maps to this sample.
-
-Implementation is tracked in issue #1; the experience-flow walkthrough in issue #2.
 
 ## Architecture (v0 — runs entirely locally)
 
@@ -110,9 +110,6 @@ export SQL_SERVER_CONNECTION='Server=localhost,1433;Database=SaasAgentSample;Use
 dotnet test SaaSAgentSample.slnx
 ```
 
-CI runs both lanes: a default SQLite/InMemory job and a `build-test-sqlserver`
-job that uses the same 2022 image via a GitHub Actions service container.
-
 ## Run the app
 
 ```bash
@@ -163,19 +160,6 @@ a manual path runs the actual emulator in Docker. See **[docs/l2-demo.md](docs/l
 dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 ```
 
-## Status (incremental — one logical change per PR)
-
-- [x] **PR1** — solution scaffold (.NET 10), CI, README skeleton
-- [x] **PR2** — authoritative state store (EF Core; SQL Server migration + SQLite `EnsureCreated`)
-- [x] **PR3** — Fulfillment/Operations v2 client + webhook validation
-- [x] **PR4** — buyer SSO landing (Resolve → explicit-confirm Activate)
-- [x] **PR5** — connection webhook endpoint
-- [x] **PR6** — minimal publisher admin
-- [x] **PR7** — tool boundary (OpenAPI + tool descriptors)
-- [x] **PR8** — synthetic L2 proof via the Emulator
-- [x] **PR9** — README + deploy docs
-- [x] **PR10** — buyer & publisher (SDC/ISV) experience-flow walkthrough (issue #2)
-
 ## Guardrails (non-negotiable)
 
 - The **state DB is the single source of truth**; the model never invents entitlement/state.
@@ -193,7 +177,7 @@ The full walkthrough — provision, managed-identity SQL access, app settings, d
 wiring the marketplace offer's landing page + connection webhook — is in
 **[docs/deploy.md](docs/deploy.md)**.
 
-## Sources (fetched, HTTP 200 on 2026-07-18)
+## Further reading
 
 - SaaS fulfillment APIs: <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-apis>
 - SaaS subscription life cycle: <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-life-cycle>
@@ -206,4 +190,4 @@ wiring the marketplace offer's landing page + connection webhook — is in
 
 ## License
 
-[MIT](LICENSE). Planning provenance: `MamoruKuroda/marketplace-skills` #29 / #30.
+[MIT](LICENSE).
