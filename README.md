@@ -14,6 +14,9 @@ is used as a reference implementation (not a fork), and the
 [Fulfillment API Emulator](https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator) (MIT)
 drives Resolve/Activate/webhook with no real purchase.
 
+New to marketplace SaaS? Start with the **[experience walkthrough](docs/walkthrough.md)** — a
+plain-language map of who does what (buyer & publisher) and how it maps to this sample.
+
 Implementation is tracked in issue #1; the experience-flow walkthrough in issue #2.
 
 ## Architecture (v0 — runs entirely locally)
@@ -171,7 +174,7 @@ dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 - [x] **PR7** — tool boundary (OpenAPI + tool descriptors)
 - [x] **PR8** — synthetic L2 proof via the Emulator
 - [x] **PR9** — README + deploy docs
-- [ ] **PR10** — buyer & publisher (SDC/ISV) experience-flow walkthrough (issue #2)
+- [x] **PR10** — buyer & publisher (SDC/ISV) experience-flow walkthrough (issue #2)
 
 ## Guardrails (non-negotiable)
 
