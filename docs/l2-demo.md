@@ -8,6 +8,8 @@ the full subscription lifecycle — Resolve → Activate → webhook → state. 
 emulator (or an in-repo HTTP stub) replaces a real marketplace purchase; no real buyer account or
 Marketplace subscription is needed.
 
+> 🌐 日本語版: **[l2-demo.ja.md](l2-demo.ja.md)**
+
 There are two ways to run it:
 
 - **A. Automated (runs in CI, no Docker):** an in-repo HTTP stub of the emulator drives the full

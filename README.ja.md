@@ -5,7 +5,7 @@
 > ・**.NET 10** で公開・運用するための、エージェント対応リファレンス実装です。
 > 本番利用は想定していません。
 
-> 🌐 English README: **[README.md](README.md)**（詳細ドキュメント `docs/` は現在英語のみです）
+> 🌐 English README: **[README.md](README.md)**
 
 エージェント支援による SaaS Offer フルフィルメント：購入者向けの **SSO ランディングページ**
 （Resolve → 明示確認のうえ Activate）、**接続 Webhook**、**権威ある購読状態ストア**、
@@ -18,7 +18,7 @@
 [Fulfillment API Emulator](https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator)（MIT）で
 実購入なしに Resolve/Activate/Webhook を駆動します。
 
-marketplace SaaS が初めての方は、まず **[体験ウォークスルー（docs/walkthrough.md）](docs/walkthrough.md)** から。
+marketplace SaaS が初めての方は、まず **[体験ウォークスルー（docs/walkthrough.ja.md）](docs/walkthrough.ja.md)** から。
 購入者・パブリッシャーそれぞれの「誰が何をするか」を平易に地図化し、本サンプルの実装に対応づけています。
 
 ## 用語（Terminology）
@@ -82,7 +82,7 @@ flowchart LR
     切り替えで動作します。
 - エンドツーエンドウォークスルー（以下「L2 ウォークスルー」と呼ぶ — 統合レベルの実証：
   トークン不要のエミュレーターを Microsoft の代役として実 HTTP 上で全購読ライフサイクルを
-  駆動）用の Fulfillment API Emulator — [docs/l2-demo.md](docs/l2-demo.md) 参照。
+  駆動）用の Fulfillment API Emulator — [docs/l2-demo.ja.md](docs/l2-demo.ja.md) 参照。
   自動テストは Docker なしで CI 上でも実行され、手動手順では `docker-compose.yml` で
   エミュレーターコンテナを起動します。
 
@@ -172,7 +172,7 @@ in-repo HTTP スタブを使うことを意味します。
 トークン不要のエミュレーターを Microsoft の代役として使い、実購入なしで
 Resolve → Activate → Webhook → 状態遷移までを通しで実証します。自動テストは実 HTTP で
 全ライフサイクルを駆動し（Docker なしで CI 上でも実行）、手動手順では実エミュレーターを
-Docker で起動します。詳細は **[docs/l2-demo.md](docs/l2-demo.md)**。
+Docker で起動します。詳細は **[docs/l2-demo.ja.md](docs/l2-demo.ja.md)**。
 
 ```bash
 dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
@@ -194,7 +194,7 @@ dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 
 プロビジョニング・マネージド ID による SQL アクセス・アプリ設定・デプロイ・マーケットプレース
 オファーのランディングページと接続 Webhook の配線を含む完全な手順は
-**[docs/deploy.md](docs/deploy.md)** にあります。
+**[docs/deploy.ja.md](docs/deploy.ja.md)** にあります。
 
 ## 参考リンク
 
