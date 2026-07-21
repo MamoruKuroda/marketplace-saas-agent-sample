@@ -4,7 +4,7 @@ namespace SaaSAgentSample.Fulfillment.Webhook;
 /// Validates the Microsoft Entra JWT presented in a webhook call's Authorization header.
 /// This is the first of the two server-side webhook checks (the second being a call to the
 /// Get Operation API to authorize the payload before acting). Validation is done entirely
-/// server-side and is never delegated to an LLM.
+/// server-side.
 /// </summary>
 public interface IWebhookTokenValidator
 {

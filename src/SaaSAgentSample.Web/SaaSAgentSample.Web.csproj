@@ -7,12 +7,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
     <PackageReference Include="Microsoft.Identity.Web" Version="4.13.1" />
-    <!-- Pin the transitive Microsoft.OpenApi to a patched version. Microsoft.AspNetCore.OpenApi
-         10.0.10 brings 2.0.0, which is affected by GHSA-v5pm-xwqc-g5wc (NU1903); 2.7.5 is the
-         in-family fix. Remove once the framework package references a patched version. -->
-    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
   </ItemGroup>
 
 </Project>

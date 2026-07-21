@@ -2,8 +2,7 @@ namespace SaaSAgentSample.Fulfillment.Webhook;
 
 /// <summary>
 /// Options controlling validation of the Microsoft Entra JWT that Microsoft attaches
-/// (Authorization header) to connection webhook calls. Server-side validation only —
-/// never delegated to an LLM.
+/// (Authorization header) to connection webhook calls. Validated server-side only.
 /// </summary>
 public sealed class WebhookValidationOptions
 {

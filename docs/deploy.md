@@ -1,6 +1,6 @@
 # Deploy to Azure (App Service + Azure SQL)
 
-> **Human-authorized only.** The agent does **not** provision or deploy. This is a reference
+> **Human-authorized only.** Nothing here is automated — provisioning and deployment are performed by a person. This is a reference
 > walkthrough; run it yourself after reviewing. All identifiers below are **placeholders** —
 > never commit real tenant, subscription, publisher, or app IDs, or any secret.
 

@@ -31,7 +31,7 @@ public enum WebhookProcessingResult
 /// authorization stage required by Microsoft: after the Entra JWT is validated (stage one,
 /// <see cref="SaaSAgentSample.Fulfillment.Webhook.IWebhookTokenValidator"/>), the payload is
 /// authorized against Microsoft's truth via the Get Operation API before the authoritative
-/// state store is mutated. Neither validation stage is ever delegated to an LLM.
+/// state store is mutated. Both validation stages run entirely in server-side code.
 ///
 /// Reference: https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-webhook
 /// </summary>

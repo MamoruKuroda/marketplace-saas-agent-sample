@@ -36,7 +36,7 @@ public sealed record FulfillmentSubscription
     public Term? Term { get; init; }
 
     // Beneficiary/purchaser carry PII (email, tenant/object IDs). Kept for fidelity to
-    // the API, but they MUST NOT be written to logs or passed into model/LLM context.
+    // the API, but they MUST NOT be written to logs.
     public Party? Beneficiary { get; init; }
     public Party? Purchaser { get; init; }
 }
