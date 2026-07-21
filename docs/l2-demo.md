@@ -1,12 +1,16 @@
 # L2 walkthrough: synthetic fulfillment lifecycle
 
-This sample proves the SaaS fulfillment plumbing end to end **without a real purchase**, using the
-Microsoft Commercial Marketplace SaaS Fulfillment APIs as the contract and a token-free emulator as
-Microsoft's stand-in. **"L2"** here means an integration-level proof: the app talks to a running
-fulfillment API over real HTTP (not a unit-level mock) and reacts to connection webhooks, exercising
-the full subscription lifecycle — Resolve → Activate → webhook → state. **"Synthetic"** means the
-emulator (or an in-repo HTTP stub) replaces a real marketplace purchase; no real buyer account or
-Marketplace subscription is needed.
+This sample proves the SaaS fulfillment plumbing end to end, with no real purchase. It uses the
+Microsoft Commercial Marketplace SaaS Fulfillment APIs as the contract, and a token-free emulator as
+Microsoft's stand-in.
+
+Two terms from the title:
+
+- **L2** — an integration-level proof. The app talks to a running fulfillment API over real HTTP (not
+  a unit mock) and reacts to connection webhooks, running the full lifecycle:
+  Resolve → Activate → webhook → state.
+- **Synthetic** — the emulator (or an in-repo HTTP stub) stands in for a real purchase. No buyer
+  account or marketplace subscription is needed.
 
 > 🌐 日本語版: **[l2-demo.ja.md](l2-demo.ja.md)**
 
