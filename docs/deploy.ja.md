@@ -16,15 +16,15 @@ v0（初期バージョン、最小構成）の対象トポロジ：
 
 ```mermaid
 flowchart LR
-    MP["Microsoft Commercial Marketplace"]
-    subgraph AZ["Azure (West US 3)"]
-        APP["App Service (.NET 10)<br/>SaaSAgentSample.Web"]
-        SQL[("Azure SQL Database<br/>state = source of truth")]
+    MP["Microsoft 商用マーケットプレース"]
+    subgraph AZ["Azure（West US 3）"]
+        APP["App Service（.NET 10）<br/>SaaSAgentSample.Web"]
+        SQL[("Azure SQL Database<br/>状態＝唯一の正本")]
     end
-    MP -->|marketplace token| APP
-    APP -->|Resolve / Activate / Get Operation| MP
-    MP -->|connection webhook + Entra JWT| APP
-    APP -->|managed identity, passwordless| SQL
+    MP -->|"マーケットプレース トークン"| APP
+    APP -->|"Resolve / Activate / Get Operation"| MP
+    MP -->|"接続 Webhook＋Entra JWT"| APP
+    APP -->|"マネージド ID・パスワードレス"| SQL
 ```
 
 ## 前提条件
