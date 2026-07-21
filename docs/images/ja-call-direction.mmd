@@ -1,0 +1,7 @@
+flowchart LR
+    subgraph N["通常：パブリッシャー → Microsoft"]
+        PUB1["パブリッシャー<br/>ランディング / サービス"] -->|"Fulfillment API v2<br/>Resolve / Activate / Get / Patch"| MS1["Microsoft"]
+    end
+    subgraph E["例外：Microsoft → パブリッシャー"]
+        MS2["Microsoft"] -->|"接続 Webhook<br/>＋署名付き JWT"| PUB2["パブリッシャー<br/>/api/webhook"]
+    end

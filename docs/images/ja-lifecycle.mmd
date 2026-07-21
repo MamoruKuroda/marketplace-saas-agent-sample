@@ -1,0 +1,8 @@
+stateDiagram-v2
+    [*] --> PendingFulfillmentStart: 購入済み・未開通
+    PendingFulfillmentStart --> Subscribed: Activate（▲ 課金開始）
+    Subscribed --> Suspended: Suspend（Webhook）
+    Suspended --> Subscribed: Reinstate（Webhook）
+    Subscribed --> Unsubscribed: Unsubscribe（Webhook）
+    Suspended --> Unsubscribed: Unsubscribe（Webhook）
+    Unsubscribed --> [*]
