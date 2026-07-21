@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SaaSAgentSample.Fulfillment;
+using SaaSAgentSample.Core.Subscriptions;
 using SaaSAgentSample.Data.Persistence;
-using SaaSAgentSample.Web.Agent;
+using SaaSAgentSample.Fulfillment;
+using SaaSAgentSample.Web.Services;
 
 namespace SaaSAgentSample.Tests.L2;
 
@@ -48,10 +49,30 @@ internal sealed class L2AppFactory : WebApplicationFactory<Program>
             services.PostConfigure<FulfillmentOptions>(o => o.BaseUrl = _fulfillmentBaseUrl);
         });
     }
+
+    /// <summary>Reads the authoritative subscription state directly from the store.</summary>
+    public async Task<Subscription?> LoadAsync(string marketplaceSubscriptionId)
+    {
+        using var scope = Services.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<ISubscriptionRepository>();
+        return await repository.GetByMarketplaceSubscriptionIdAsync(marketplaceSubscriptionId);
+    }
+
+    /// <summary>
+    /// Triggers activation the same way the buyer landing does (LandingService), which calls the
+    /// emulator's Activate API over HTTP and transitions the local record.
+    /// </summary>
+    public async Task ActivateAsync(string marketplaceSubscriptionId, string planId)
+    {
+        using var scope = Services.CreateScope();
+        var landing = scope.ServiceProvider.GetRequiredService<LandingService>();
+        await landing.ActivateAsync(marketplaceSubscriptionId, planId, quantity: null);
+    }
 }
 
 public class SyntheticL2LifecycleTests
 {
+    private const string SubId = "sub-e2e";
     private static readonly JsonSerializerOptions Web = new(JsonSerializerDefaults.Web);
 
     [Fact]
@@ -63,44 +84,40 @@ public class SyntheticL2LifecycleTests
 
         // 1. Resolve: buyer opens the landing page with a purchase token. The app calls the
         //    emulator's resolve API over HTTP and records the subscription as pending.
-        var landing = await client.GetAsync("/?token=" + Uri.EscapeDataString("synthetic-token"));
-        landing.EnsureSuccessStatusCode();
+        (await client.GetAsync("/?token=" + Uri.EscapeDataString("synthetic-token"))).EnsureSuccessStatusCode();
 
-        var subscriptions = await client.GetFromJsonAsync<SubscriptionDto[]>("/api/subscriptions", Web);
-        var subscription = Assert.Single(subscriptions!);
-        Assert.Equal("sub-e2e", subscription.MarketplaceSubscriptionId);
-        Assert.Equal("PendingFulfillmentStart", subscription.State);
-        var id = subscription.Id;
+        var resolved = await factory.LoadAsync(SubId);
+        Assert.NotNull(resolved);
+        Assert.Equal(SubscriptionState.PendingFulfillmentStart, resolved!.State);
 
-        // 2. Activate (explicit confirmation): the app calls the emulator's activate API over HTTP.
-        var activate = await client.PostAsJsonAsync($"/api/subscriptions/{id}/activate", new { confirm = true }, Web);
-        activate.EnsureSuccessStatusCode();
+        // 2. Activate (buyer landing): the app calls the emulator's Activate API over HTTP.
+        await factory.ActivateAsync(SubId, resolved.PlanId);
         Assert.Equal(1, emulator.ActivateCount);
-        Assert.Equal("Subscribed", (await GetSubscriptionAsync(client, id)).State);
+        Assert.Equal(SubscriptionState.Subscribed, (await factory.LoadAsync(SubId))!.State);
 
         // 3. ChangePlan webhook: the emulator notifies; the app authorizes via Get Operation
         //    (over HTTP), changes the plan, and acknowledges via Patch Operation (over HTTP).
-        emulator.RegisterOperation("op-changeplan", "sub-e2e", "ChangePlan", planId: "gold");
-        (await PostWebhookAsync(client, "op-changeplan", "sub-e2e", "ChangePlan", planId: "gold")).EnsureSuccessStatusCode();
-        var afterChangePlan = await GetSubscriptionAsync(client, id);
-        Assert.Equal("gold", afterChangePlan.PlanId);
-        Assert.Equal("Subscribed", afterChangePlan.State);
+        emulator.RegisterOperation("op-changeplan", SubId, "ChangePlan", planId: "gold");
+        (await PostWebhookAsync(client, "op-changeplan", SubId, "ChangePlan", planId: "gold")).EnsureSuccessStatusCode();
+        var afterChangePlan = await factory.LoadAsync(SubId);
+        Assert.Equal("gold", afterChangePlan!.PlanId);
+        Assert.Equal(SubscriptionState.Subscribed, afterChangePlan.State);
         Assert.Contains(emulator.Patches, p => p.OperationId == "op-changeplan" && p.Status == "Success");
 
         // 4. Suspend webhook.
-        emulator.RegisterOperation("op-suspend", "sub-e2e", "Suspend");
-        (await PostWebhookAsync(client, "op-suspend", "sub-e2e", "Suspend")).EnsureSuccessStatusCode();
-        Assert.Equal("Suspended", (await GetSubscriptionAsync(client, id)).State);
+        emulator.RegisterOperation("op-suspend", SubId, "Suspend");
+        (await PostWebhookAsync(client, "op-suspend", SubId, "Suspend")).EnsureSuccessStatusCode();
+        Assert.Equal(SubscriptionState.Suspended, (await factory.LoadAsync(SubId))!.State);
 
         // 5. Reinstate webhook.
-        emulator.RegisterOperation("op-reinstate", "sub-e2e", "Reinstate");
-        (await PostWebhookAsync(client, "op-reinstate", "sub-e2e", "Reinstate")).EnsureSuccessStatusCode();
-        Assert.Equal("Subscribed", (await GetSubscriptionAsync(client, id)).State);
+        emulator.RegisterOperation("op-reinstate", SubId, "Reinstate");
+        (await PostWebhookAsync(client, "op-reinstate", SubId, "Reinstate")).EnsureSuccessStatusCode();
+        Assert.Equal(SubscriptionState.Subscribed, (await factory.LoadAsync(SubId))!.State);
 
         // 6. Unsubscribe webhook (terminal).
-        emulator.RegisterOperation("op-unsubscribe", "sub-e2e", "Unsubscribe");
-        (await PostWebhookAsync(client, "op-unsubscribe", "sub-e2e", "Unsubscribe")).EnsureSuccessStatusCode();
-        Assert.Equal("Unsubscribed", (await GetSubscriptionAsync(client, id)).State);
+        emulator.RegisterOperation("op-unsubscribe", SubId, "Unsubscribe");
+        (await PostWebhookAsync(client, "op-unsubscribe", SubId, "Unsubscribe")).EnsureSuccessStatusCode();
+        Assert.Equal(SubscriptionState.Unsubscribed, (await factory.LoadAsync(SubId))!.State);
     }
 
     [Fact]
@@ -112,19 +129,16 @@ public class SyntheticL2LifecycleTests
 
         // Bring a subscription to Subscribed.
         (await client.GetAsync("/?token=t")).EnsureSuccessStatusCode();
-        var id = (await client.GetFromJsonAsync<SubscriptionDto[]>("/api/subscriptions", Web))!.Single().Id;
-        (await client.PostAsJsonAsync($"/api/subscriptions/{id}/activate", new { confirm = true }, Web)).EnsureSuccessStatusCode();
+        var resolved = await factory.LoadAsync(SubId);
+        await factory.ActivateAsync(SubId, resolved!.PlanId);
 
         // Post a Suspend webhook whose operation the emulator does not know about. The app's
         // Get Operation authorization check (over HTTP) fails, so the payload is rejected.
-        var response = await PostWebhookAsync(client, "op-unknown", "sub-e2e", "Suspend");
+        var response = await PostWebhookAsync(client, "op-unknown", SubId, "Suspend");
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        Assert.Equal("Subscribed", (await GetSubscriptionAsync(client, id)).State);
+        Assert.Equal(SubscriptionState.Subscribed, (await factory.LoadAsync(SubId))!.State);
     }
-
-    private static async Task<SubscriptionDto> GetSubscriptionAsync(HttpClient client, Guid id)
-        => (await client.GetFromJsonAsync<SubscriptionDto>($"/api/subscriptions/{id}", Web))!;
 
     private static Task<HttpResponseMessage> PostWebhookAsync(
         HttpClient client, string operationId, string subscriptionId, string action, string? planId = null, int? quantity = null)

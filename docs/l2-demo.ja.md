@@ -90,7 +90,7 @@ dotnet run --project src/SaaSAgentSample.Web
 2. 生成された購入トークンをコピーし、このアプリのランディングページを開く：
    `http://localhost:5134/?token=<purchase-token>`。ページは **Resolve** を呼びプランを表示します。
 3. **Activate** をクリック。アプリはエミュレーターの **Activate** API を呼び、レコードを `Subscribed` に。
-4. `http://localhost:5134/admin`（または `GET http://localhost:5134/api/subscriptions`）で確認。
+4. `http://localhost:5134/admin` で購読を確認。
 
 ### 4. Webhook を駆動
 

@@ -11,10 +11,8 @@ The approach is a **metaphor map**: name the actors and the "passes" they exchan
 subscription lifecycle as one story, and highlight the single place where the call direction flips.
 
 > **Quick glossary** — terms used in this document:
-> - **v0**: the initial version of this sample (all components run locally, no LLM loop).
-> - **v0.1**: planned next milestone that adds the LLM agent loop.
+> - **v0**: the initial version of this sample (all components run locally).
 > - **Tier-1 flat-rate**: a single fixed monthly price per subscription (no metered or per-user billing).
-> - **Tool boundary**: the OpenAPI surface that exposes publisher actions for an LLM/agent to call.
 > - **L2 walkthrough**: an integration-level end-to-end proof — the app exercises the full subscription lifecycle over real HTTP using a token-free emulator.
 > - **Synthetic L2**: the automated in-repo variant where an HTTP stub replaces the Docker emulator (no Docker needed).
 > - **L3**: a live end-to-end test with a real marketplace purchase and real buyer account (out of scope for this sample).
@@ -124,7 +122,7 @@ version — plan changes are tracked; quantity is acknowledged only because this
 implements **Tier-1 flat-rate**: one fixed price, no per-unit billing).
 
 In this sample the aggregate **guards these transitions** (invalid ones are rejected), and state is
-the single source of truth — the model never fabricates it.
+the single source of truth — the app never fabricates it.
 
 ---
 
@@ -151,7 +149,7 @@ The "passes" that travel through the flow (the metaphor that makes it stick):
 | **Access token** | vendor pass | Service app's **authorization** to call Fulfillment API v2 | bearer token on API calls |
 | **Signed JWT** | Microsoft's name badge | Attached to **webhook** calls; proves the caller | validated server-side |
 
-> **Webhook validation is server-side and never delegated to the model**: this sample validates the
+> **Webhook validation is server-side**: this sample validates the
 > Entra JWT (signature/issuer/audience + `appid`/`azp`, where `20e940b3-4c07-4bc1-a733-45f7c7a3d0e3`
 > is the **public** Marketplace app id — a documented constant, not a secret), and then authorizes
 > the payload against Microsoft's truth via the **Get Operation** API before changing any state.
@@ -166,12 +164,11 @@ The "passes" that travel through the flow (the metaphor that makes it stick):
 | Connection webhook (2-stage server-side) | `POST /api/webhook`, `WebhookService` + `IWebhookTokenValidator` |
 | Authoritative subscription state (4 states) | `SaaSAgentSample.Core` aggregate + `SaaSAgentSample.Data` store |
 | Publisher admin (inspect + explicit Activate) | `/admin`, `/admin/{id}` |
-| Agent tool boundary (add an LLM later) | `/api/tools`, `/openapi/v1.json` — **tool boundary**: the OpenAPI surface an LLM can call into (LLM loop planned for v0.1) |
 | Test without a real purchase | [L2 walkthrough](l2-demo.md) via the emulator — **L2** = integration-level end-to-end proof over HTTP |
 
 **In v0 scope (initial local-only version):** Tier-1 **flat-rate** only (single fixed price).
 **Out of scope in v0:** metered billing / per-user quantity / real marketplace purchase (L3 —
-live end-to-end with a real buyer account) / the LLM agent loop (planned for v0.1). See the
+live end-to-end with a real buyer account). See the
 [README](../README.md) for run and config, and [docs/deploy.md](deploy.md) for a
 human-authorized Azure deployment.
 

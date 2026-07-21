@@ -91,7 +91,7 @@ The app listens on `http://localhost:5134` by default. `appsettings.Development.
    `http://localhost:5134/?token=<purchase-token>`.
    The page calls **Resolve** and shows the plan.
 3. Click **Activate**. The app calls the emulator's **Activate** API and moves the record to `Subscribed`.
-4. Confirm at `http://localhost:5134/admin` (or `GET http://localhost:5134/api/subscriptions`).
+4. Confirm the subscription at `http://localhost:5134/admin`.
 
 ### 4. Drive webhooks
 

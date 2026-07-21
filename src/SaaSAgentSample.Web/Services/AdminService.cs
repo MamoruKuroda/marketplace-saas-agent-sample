@@ -17,7 +17,7 @@ public enum AdminActivationResult
 /// Backs the minimal publisher admin. Read operations project the authoritative state store;
 /// the single write operation (Activate) is an explicit, confirmed action that calls the
 /// Fulfillment Activate API and then transitions the local aggregate. The state store remains
-/// the single source of truth and the model never fabricates entitlement.
+/// the single source of truth; entitlement is never fabricated.
 /// </summary>
 public sealed class AdminService
 {

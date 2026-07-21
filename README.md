@@ -1,18 +1,17 @@
 # marketplace-saas-agent-sample
 
-> **Experimental teaching sample — work in progress.** An agent-ready reference for
+> **Experimental teaching sample — work in progress.** A reference for
 > publishing and operating a **Microsoft Commercial Marketplace SaaS Offer** at
 > **Tier-1 flat-rate** (a single fixed monthly price per subscription — no metered billing,
 > no per-user quantity) on **.NET 10**. Not for production use.
 
 > 🌐 日本語版の README は **[README.ja.md](README.ja.md)** をご覧ください。
 
-Agent-assisted SaaS Offer fulfillment: a buyer **SSO landing page**
+A SaaS Offer fulfillment sample: a buyer **SSO landing page**
 (Resolve → explicit-confirm Activate), a **connection webhook**, an **authoritative
-subscription-state store**, and a **minimal publisher admin** — behind a language-agnostic
-**tool boundary** (an OpenAPI surface that an LLM or agent can call into later) so a
-model layer can be added without rewriting the **fulfillment plane** (the publisher-side
-implementation: landing page, webhook, and state store). The official
+subscription-state store**, and a **minimal publisher admin** — together the
+**fulfillment plane** (the publisher-side implementation that keeps a subscription's
+state in sync with Microsoft). The official
 [SaaS Accelerator](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator) (MIT)
 is used as a reference implementation (not a fork), and the
 [Fulfillment API Emulator](https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator) (MIT)
@@ -27,9 +26,7 @@ plain-language map of who does what (buyer & publisher) and how it maps to this 
 | --- | --- |
 | **Tier-1 flat-rate** | A Microsoft pricing model: a single fixed monthly price per subscription (no metered billing, no per-user quantity). |
 | **Fulfillment plane** | The publisher-side SaaS implementation: landing page, connection webhook, and subscription state store. |
-| **Tool boundary** | An OpenAPI surface (+ tool descriptors) exposing publisher actions in a format an LLM or agent can call into. |
-| **v0** | The initial version of this sample — all components run locally, no LLM agent loop yet. |
-| **v0.1** | Planned next milestone: adds the LLM agent loop on top of the v0 base. |
+| **v0** | The initial version of this sample — all components run locally. |
 | **L2 walkthrough** | An integration-level end-to-end proof: the app talks to a fulfillment API over real HTTP (emulated) and exercises the full subscription lifecycle. |
 | **Synthetic L2** | The automated in-repo variant: an HTTP stub replaces the Docker-based emulator, so no Docker is required. |
 
@@ -43,7 +40,6 @@ flowchart LR
             LP["Buyer SSO Landing<br/>Resolve to explicit-confirm Activate"]
             WH["Connection Webhook<br/>/api/webhook"]
             ADM["Publisher Admin<br/>inspect + explicit-confirm Activate"]
-            TB["Tool boundary<br/>OpenAPI + tool descriptors"]
         end
         DB[("State DB = source of truth<br/>SQL Server via EF Core")]
     end
@@ -54,7 +50,6 @@ flowchart LR
     LP --- DB
     WH --- DB
     ADM --- DB
-    TB -.->|"LLM binds here (planned: v0.1)"| ADM
 ```
 
 ## Solution layout
@@ -64,7 +59,7 @@ flowchart LR
 | `src/SaaSAgentSample.Core` | Domain model (subscription, state, plan); infrastructure-agnostic |
 | `src/SaaSAgentSample.Data` | EF Core state store (single source of truth); SQL Server / Azure SQL |
 | `src/SaaSAgentSample.Fulfillment` | Fulfillment/Operations API v2 client + webhook validation (server-side) |
-| `src/SaaSAgentSample.Web` | Buyer SSO landing, connection webhook, publisher admin, tool boundary |
+| `src/SaaSAgentSample.Web` | Buyer SSO landing, connection webhook, publisher admin |
 | `tests/SaaSAgentSample.Tests` | Unit + integration (synthetic end-to-end) tests — see [L2 walkthrough](#l2-walkthrough-synthetic-fulfillment-lifecycle) |
 
 ## Prerequisites
@@ -142,10 +137,6 @@ flow works locally without Entra or a real purchase. Endpoints:
 | `/?token=<purchase-token>` | Buyer SSO landing (Resolve → explicit-confirm Activate) |
 | `/admin`, `/admin/{id}` | Publisher admin (inspect + explicit-confirm Activate) |
 | `POST /api/webhook` | Connection webhook (server-side Entra JWT + Get Operation) |
-| `/api/subscriptions`, `/api/subscriptions/{id}` | Tool boundary — read state (JSON) |
-| `POST /api/subscriptions/{id}/activate` | Tool boundary — activate (`confirm=true` required) |
-| `/api/tools` | Tool descriptors (function-calling schemas) |
-| `/openapi/v1.json` | OpenAPI document for the tool boundary |
 
 ## Configuration reference
 
@@ -181,10 +172,10 @@ dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 
 ## Guardrails (non-negotiable)
 
-- The **state DB is the single source of truth**; the model never invents entitlement/state.
+- The **state DB is the single source of truth**; subscription state comes only from the store and the Fulfillment API — the app never invents it.
 - **State-changing actions require explicit confirmation.**
-- **No purchase/bearer tokens, secrets, or unnecessary PII** in the model context or logs.
-- **Webhook Authorization validation is server-side** (Entra JWT + Get Operation), never delegated to the model.
+- **No purchase/bearer tokens, secrets, or unnecessary PII** in logs.
+- **Webhook Authorization validation is server-side** (Entra JWT + Get Operation).
 
 ## Deploy
 
