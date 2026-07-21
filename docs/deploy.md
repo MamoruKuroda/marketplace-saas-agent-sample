@@ -4,6 +4,8 @@
 > walkthrough; run it yourself after reviewing. All identifiers below are **placeholders** —
 > never commit real tenant, subscription, publisher, or app IDs, or any secret.
 
+> 🌐 日本語版: **[deploy.ja.md](deploy.ja.md)**
+
 Target topology for v0 (initial version, minimal footprint):
 
 - **Azure App Service** (Linux, .NET 10) hosts `SaaSAgentSample.Web`.

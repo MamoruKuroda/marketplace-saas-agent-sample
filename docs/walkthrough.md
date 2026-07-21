@@ -5,6 +5,8 @@ Commercial Marketplace — and how each piece maps to **this sample's** code. Re
 code to understand *why* each part exists. It is a teaching aid, not a substitute for the official
 docs (linked at the end).
 
+> 🌐 日本語版: **[walkthrough.ja.md](walkthrough.ja.md)**
+
 The approach is a **metaphor map**: name the actors and the "passes" they exchange, tell the
 subscription lifecycle as one story, and highlight the single place where the call direction flips.
 
