@@ -1,0 +1,10 @@
+flowchart LR
+    MP["Microsoft 商用マーケットプレース"]
+    subgraph AZ["Azure（West US 3）"]
+        APP["App Service（.NET 10）<br/>SaaSAgentSample.Web"]
+        SQL[("Azure SQL Database<br/>状態＝唯一の正本")]
+    end
+    MP -->|"マーケットプレース トークン"| APP
+    APP -->|"Resolve / Activate / Get Operation"| MP
+    MP -->|"接続 Webhook＋Entra JWT"| APP
+    APP -->|"マネージド ID・パスワードレス"| SQL

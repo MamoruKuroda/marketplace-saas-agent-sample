@@ -1,0 +1,19 @@
+flowchart LR
+    subgraph PC["ローカルマシン（v0 — エンドツーエンド実証）"]
+        EMU["Fulfillment API エミュレーター<br/>（Microsoft の代役・トークン不要）"]
+        subgraph WEB["SaaSAgentSample.Web"]
+            LP["購入者 SSO ランディング<br/>Resolve → 明示確認 Activate"]
+            WH["接続 Webhook<br/>/api/webhook"]
+            ADM["パブリッシャー管理<br/>閲覧＋明示確認 Activate"]
+            TB["ツール境界<br/>OpenAPI＋ツール記述子"]
+        end
+        DB[("状態 DB＝唯一の正本<br/>SQL Server / EF Core")]
+    end
+    EMU -->|"マーケットプレース トークン"| LP
+    LP -->|"Resolve / Activate"| EMU
+    EMU -->|"POST 通知＋Authorization JWT"| WH
+    WH -->|"Get Operation で認可"| EMU
+    LP --- DB
+    WH --- DB
+    ADM --- DB
+    TB -.->|"LLM はここに接続（v0.1 予定）"| ADM

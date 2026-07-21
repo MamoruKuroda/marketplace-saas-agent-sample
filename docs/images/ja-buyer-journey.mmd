@@ -1,0 +1,14 @@
+flowchart LR
+    D["1. 発見<br/>オファーを見つける"] --> P["2. 購入<br/>プランを選択（課金は Microsoft）"]
+    P --> L["3. ランディング<br/>「アカウント構成」で<br/>パブリッシャーのページへ"]
+    L --> S["4. サインイン<br/>Entra ID・購入者自身のテナント"]
+    S --> U["5. 利用開始<br/>購読が有効"]
+    subgraph MS["Microsoft ホスト（パブリッシャー実装なし）"]
+        D
+        P
+    end
+    subgraph PUB["パブリッシャー実装（本サンプル）"]
+        L
+        S
+        U
+    end

@@ -14,18 +14,8 @@ v0（初期バージョン、最小構成）の対象トポロジ：
 - **マネージド ID** で App Service → Azure SQL を**パスワードレス**接続（接続文字列にシークレットなし）。
 - リージョン：**West US 3**（本サンプルの統合テストで使用した実績から選定）。
 
-```mermaid
-flowchart LR
-    MP["Microsoft 商用マーケットプレース"]
-    subgraph AZ["Azure（West US 3）"]
-        APP["App Service（.NET 10）<br/>SaaSAgentSample.Web"]
-        SQL[("Azure SQL Database<br/>状態＝唯一の正本")]
-    end
-    MP -->|"マーケットプレース トークン"| APP
-    APP -->|"Resolve / Activate / Get Operation"| MP
-    MP -->|"接続 Webhook＋Entra JWT"| APP
-    APP -->|"マネージド ID・パスワードレス"| SQL
-```
+<!-- GitHub の Mermaid は日本語ラベルを見切れさせるため、PNG を事前生成して埋め込み。ソース: images/ja-deploy-topology.mmd -->
+![Azure デプロイのトポロジ](images/ja-deploy-topology.png)
 
 ## 前提条件
 
