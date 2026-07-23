@@ -14,7 +14,8 @@
 - **権威ある購読状態ストア**、
 - **最小限のパブリッシャー管理画面**。
 
-すべてローカルで動作します。公式の
+動かし方は2通りあります：**手元のマシンだけ**（Azure 不要）で動かすか、**クラウドのデモ**を
+1コマンドで Azure にデプロイするか。公式の
 [SaaS Accelerator](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator)（MIT）は
 参照実装として利用し（fork しません）、
 [Fulfillment API Emulator](https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator)（MIT）が
@@ -23,7 +24,19 @@
 **marketplace SaaS が初めての方へ:** まず [体験ウォークスルー](docs/walkthrough.ja.md) から。
 購入者・パブリッシャーそれぞれの「誰が何をするか」を平易に地図化し、本サンプルの実装に対応づけています。
 
-## クイックスタート
+## 動かし方は2通り
+
+| | **ローカルで動かす** | **クラウドにデモをデプロイ** |
+| --- | --- | --- |
+| 目的 | 開発・テスト・お試し | 他の人がブラウザで開ける公開 URL |
+| コマンド | `dotnet run` / `dotnet test` | `azd up` |
+| 状態ストア | **SQLite** — セットアップ不要、どのマシンでも動く（arm64 含む） | **Azure SQL** — 権威あるストア。マネージド ID でパスワードレス接続 |
+| Azure は必要？ | 不要 | 必要（Azure サブスクリプション） |
+
+SQLite は*ローカル開発*用のストア（何もインストール不要でどこでも動く）、Azure SQL はクラウドで使う
+*権威ある*ストアです。アプリもコードも同じ — 違うのは `Database:Provider` だけ。
+
+### ローカルで動かす
 
 必要なのは [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) だけです。
 Docker・Azure・マーケットプレースでの購入は不要です。
@@ -46,6 +59,27 @@ dotnet run --project src/SaaSAgentSample.Web
 購入者ランディングを実際の購入トークンで駆動するには、
 [エンドツーエンドウォークスルー](docs/l2-demo.ja.md) を参照してください。
 
+### クラウドにデモをデプロイ（azd）
+
+1コマンドで Azure をプロビジョニングしてアプリをデプロイし、公開 URL を共有できます。これは
+手順を1つずつ追う [docs/deploy.ja.md](docs/deploy.ja.md) の自動版です。
+
+```bash
+# 事前準備（初回のみ）: Azure Developer CLI（https://aka.ms/azd-install）・
+# Azure CLI・sqlcmd を入れてサインイン:
+azd auth login
+
+azd up      # 環境名・サブスクリプション・リージョンを選ぶ
+            # → App Service ＋ Azure SQL を作成してデプロイ（数分）
+            # → 表示された URL の <url>/admin を開く
+
+azd down    # 使い終わったら一括削除
+```
+
+既定のデモは購入者サインインを**オフ**にしてあるので、Microsoft Entra のアプリ登録なしで
+すぐ `/admin` を開けます。本番寄りの構成（サインインを有効化、各手順の理解）は
+[docs/deploy.ja.md](docs/deploy.ja.md) を参照してください。
+
 <details>
 <summary>用語（v0・L2・Tier-1 など）</summary>
 
@@ -61,10 +95,12 @@ dotnet run --project src/SaaSAgentSample.Web
 
 ## アーキテクチャ
 
-v0 ではすべてが 1 台のマシン上で動作します。
+**ローカル**で動かすときは、すべてが 1 台のマシン上で動作します（下図）。**クラウドのデモ**として
+デプロイした場合は、同じアプリが Azure App Service 上で動き、状態ストアは Azure SQL になります
+— クラウド構成は [docs/deploy.ja.md](docs/deploy.ja.md) を参照。
 
 <!-- GitHub の Mermaid は日本語ラベルを見切れさせるため、PNG を事前生成して埋め込み。ソース: docs/images/ja-architecture.mmd -->
-![アーキテクチャ図（v0・完全ローカル構成）](docs/images/ja-architecture.png)
+![アーキテクチャ図（ローカル構成）](docs/images/ja-architecture.png)
 
 ## ソリューション構成
 
@@ -75,10 +111,11 @@ v0 ではすべてが 1 台のマシン上で動作します。
 | `src/SaaSAgentSample.Fulfillment` | Fulfillment/Operations API v2 クライアント＋サーバー側 Webhook 検証 |
 | `src/SaaSAgentSample.Web` | 購入者 SSO ランディング・接続 Webhook・パブリッシャー管理 |
 | `tests/SaaSAgentSample.Tests` | ユニット＋統合（合成エンドツーエンド）テスト |
+| `infra/`・`azure.yaml`・`scripts/` | `azd` クラウドデプロイ：App Service ＋ Azure SQL の Bicep と、デプロイ後の DB 権限付与 |
 
 ## ローカルで動かす
 
-上のクイックスタートだけで動作を確認できます。ここでは詳細を補足します。
+上の「ローカルで動かす」手順だけで動作を確認できます。ここでは詳細を補足します。
 
 ### 前提条件
 
@@ -200,13 +237,15 @@ dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 
 ## デプロイ
 
-本番の対象は Azure App Service（.NET 10）＋ Azure SQL（リージョン West US 3）で、アプリはマネージド ID
-による**パスワードレス**接続でデータベースに接続します（接続文字列にシークレットなし）。
-プロビジョニングは人間の承認がある場合のみで、ここから自動でデプロイされることはありません。
+対象は Azure App Service（.NET 10）＋ Azure SQL で、アプリはマネージド ID による**パスワードレス**接続で
+データベースに接続します（接続文字列にシークレットなし）。プロビジョニングは人間の承認がある場合のみで、
+ここから自動でデプロイされることはありません。
 
-プロビジョニング・マネージド ID による SQL アクセス・アプリ設定・デプロイ・マーケットプレース
-オファーのランディングページと接続 Webhook の配線を含む完全な手順は
-**[docs/deploy.ja.md](docs/deploy.ja.md)** にあります。
+- **1コマンド:** `azd up` — 上の [クラウドにデモをデプロイ](#クラウドにデモをデプロイazd) を参照。
+  `infra/` に定義した内容一式をプロビジョニングし、アプリをデプロイします。
+- **1ステップずつ:** [docs/deploy.ja.md](docs/deploy.ja.md) が各 `az` コマンド（プロビジョニング・
+  マネージド ID による SQL アクセス・アプリ設定・デプロイ・オファーのランディングページと接続 Webhook の
+  配線）を1つずつ解説します。各リソースを理解したいときや本番寄りの構成に。
 
 ## 参考リンク
 

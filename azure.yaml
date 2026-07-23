@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+#
+# Azure Developer CLI (azd) config for the one-command CLOUD DEMO.
+#   azd up    provisions infra/ (App Service + Azure SQL, passwordless via managed identity)
+#             and deploys the app, then runs the postprovision hook to grant the app's
+#             managed identity a database user.
+#   azd down  tears everything down.
+#
+# This is the automated equivalent of the manual walkthrough in docs/deploy.md.
+# Nothing here runs automatically — a person runs `azd up` (provisioning is human-authorized).
+name: marketplace-saas-agent-sample
+metadata:
+  template: marketplace-saas-agent-sample@0.1.0
+
+services:
+  web:
+    project: ./src/SaaSAgentSample.Web
+    language: dotnet
+    host: appservice
+
+hooks:
+  # Azure SQL cannot create a contained user for a managed identity via ARM/Bicep alone,
+  # so azd runs this once after provisioning. It connects as the Entra admin (you, the
+  # deployer) and creates a least-privilege DB user for the web app's managed identity.
+  # This mirrors step 2 of docs/deploy.md. If it fails (e.g. sqlcmd not installed), run
+  # that manual SQL step instead.
+  postprovision:
+    windows:
+      shell: pwsh
+      run: ./scripts/postprovision.ps1
+      interactive: true
+      continueOnError: false
+    posix:
+      shell: sh
+      run: ./scripts/postprovision.sh
+      interactive: true
+      continueOnError: false
