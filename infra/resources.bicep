@@ -105,7 +105,7 @@ resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
   }
 
   resource allowAzure 'firewallRules@2023-08-01-preview' = {
-    name: 'AllowAllWindowsAzureIps'
+    name: 'AllowAllAzureServices'
     properties: {
       startIpAddress: '0.0.0.0'
       endIpAddress: '0.0.0.0'

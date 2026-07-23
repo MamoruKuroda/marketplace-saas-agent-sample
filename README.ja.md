@@ -62,7 +62,8 @@ dotnet run --project src/SaaSAgentSample.Web
 ### クラウドにデモをデプロイ（azd）
 
 1コマンドで Azure をプロビジョニングしてアプリをデプロイし、公開 URL を共有できます。これは
-手順を1つずつ追う [docs/deploy.ja.md](docs/deploy.ja.md) の自動版です。
+手順を1つずつ追う [docs/deploy.ja.md](docs/deploy.ja.md) の自動版です。azd が初めてなら
+[Azure Developer CLI のドキュメント](https://learn.microsoft.com/ja-jp/azure/developer/azure-developer-cli/overview)を参照。
 
 ```bash
 # 事前準備（初回のみ）: Azure Developer CLI（https://aka.ms/azd-install）・
@@ -254,6 +255,7 @@ dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 - Implementing a webhook (JWT validation + Get Operation): <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-webhook>
 - Register a SaaS application: <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-registration>
 - Deploy an ASP.NET web app to App Service: <https://learn.microsoft.com/en-us/azure/app-service/quickstart-dotnetcore>
+- Azure Developer CLI (azd): <https://learn.microsoft.com/ja-jp/azure/developer/azure-developer-cli/overview>
 - Connect .NET apps to Azure SQL with managed identity: <https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-sql-database>
 - What is Azure SQL Database: <https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview?view=azuresql>
 - .NET lifecycle (.NET 10 supported to 2028-11-14): <https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-and-net-core>
