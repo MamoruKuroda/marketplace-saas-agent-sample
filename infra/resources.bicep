@@ -189,8 +189,10 @@ resource emulator 'Microsoft.App/containerApps@2024-03-01' = {
             memory: '1Gi'
           }
           env: [
-            // The emulator POSTs connection webhooks to the app.
+            // The emulator POSTs connection webhooks to the app, and its "Continue" button
+            // sends the buyer to the app's landing page (carrying the purchase token).
             { name: 'WEBHOOK_URL', value: 'https://${webAppName}.azurewebsites.net/api/webhook' }
+            { name: 'LANDING_PAGE_URL', value: 'https://${webAppName}.azurewebsites.net/' }
             { name: 'PUBLISHER_ID', value: 'FourthCoffee' }
           ]
         }
