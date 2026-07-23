@@ -23,6 +23,7 @@ services:
   # (remoteBuild) so no local Docker/npm is needed. Source is fetched by the prepackage hook.
   emulator:
     project: ./.emulator-src
+    language: docker
     host: containerapp
     docker:
       path: docker/Dockerfile
