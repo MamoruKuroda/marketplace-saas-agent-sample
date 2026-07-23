@@ -31,6 +31,7 @@ param webhookAudience string
 
 var sqlDatabaseName = 'SaasAgentSample'
 var webAppName = 'app-${resourceToken}'
+var emulatorName = 'emu-${resourceToken}'
 var sqlServerName = 'sql-${resourceToken}'
 
 // Public Microsoft Commercial Marketplace app id — a documented constant, not a secret.
@@ -74,12 +75,40 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
         { name: 'AzureAd__Instance', value: environment().authentication.loginEndpoint }
         { name: 'AzureAd__TenantId', value: 'common' }
         { name: 'AzureAd__ClientId', value: landingClientId }
-        { name: 'Fulfillment__BaseUrl', value: 'https://marketplaceapi.microsoft.com/api' }
+        // Demo: point the app at the deployed emulator (Microsoft's stand-in) so the flow is
+        // interactive. The emulator sends unsigned webhook tokens, so signature enforcement is off.
+        { name: 'Fulfillment__BaseUrl', value: 'https://${emulatorName}.azurewebsites.net/api' }
         { name: 'Fulfillment__ApiVersion', value: '2018-08-31' }
         { name: 'Fulfillment__Webhook__Audience', value: webhookAudience }
         { name: 'Fulfillment__Webhook__ExpectedAppId', value: marketplaceAppId }
         { name: 'Fulfillment__Webhook__MetadataAddress', value: '${environment().authentication.loginEndpoint}common/v2.0/.well-known/openid-configuration' }
-        { name: 'Fulfillment__Webhook__RequireSignedToken', value: 'true' }
+        { name: 'Fulfillment__Webhook__RequireSignedToken', value: 'false' }
+      ]
+    }
+  }
+}
+
+// Fulfillment API Emulator (Node/TypeScript) — Microsoft's token-free marketplace stand-in.
+// Deployed as source to App Service on the same plan; azd builds it (npm build) and runs
+// `node dist/index.js`. It POSTs connection webhooks to the app and answers Resolve/Activate.
+resource emulator 'Microsoft.Web/sites@2024-04-01' = {
+  name: emulatorName
+  location: location
+  tags: union(tags, { 'azd-service-name': 'emulator' })
+  properties: {
+    serverFarmId: appServicePlan.id
+    httpsOnly: true
+    siteConfig: {
+      linuxFxVersion: 'NODE|20-lts'
+      alwaysOn: true
+      ftpsState: 'Disabled'
+      minTlsVersion: '1.2'
+      appCommandLine: 'node dist/index.js'
+      appSettings: [
+        { name: 'SCM_DO_BUILD_DURING_DEPLOYMENT', value: 'true' }
+        // The emulator POSTs connection webhooks to the app.
+        { name: 'WEBHOOK_URL', value: 'https://${webAppName}.azurewebsites.net/api/webhook' }
+        { name: 'PUBLISHER_ID', value: 'FourthCoffee' }
       ]
     }
   }
@@ -126,6 +155,8 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
 
 output webAppName string = webApp.name
 output webAppUri string = 'https://${webApp.properties.defaultHostName}'
+output emulatorName string = emulator.name
+output emulatorUri string = 'https://${emulator.properties.defaultHostName}'
 output sqlServerName string = sqlServer.name
 output sqlServerFqdn string = sqlServer.properties.fullyQualifiedDomainName
 output sqlDatabaseName string = sqlDatabase.name
