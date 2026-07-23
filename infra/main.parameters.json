@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION=westus3}"
+    },
+    "principalId": {
+      "value": "${AZURE_PRINCIPAL_ID}"
+    },
+    "principalName": {
+      "value": "${AZURE_PRINCIPAL_NAME=azd-deployer}"
+    },
+    "principalType": {
+      "value": "${AZURE_PRINCIPAL_TYPE=User}"
+    },
+    "requireAuthentication": {
+      "value": "${REQUIRE_AUTHENTICATION=false}"
+    },
+    "landingClientId": {
+      "value": "${LANDING_CLIENT_ID=}"
+    },
+    "webhookAudience": {
+      "value": "${WEBHOOK_AUDIENCE=}"
+    }
+  }
+}

@@ -14,7 +14,8 @@ This sample implements the *publisher side* of a marketplace SaaS subscription �
 - an **authoritative subscription-state store**, and
 - a **minimal publisher admin** page.
 
-It runs entirely on your machine. The official
+You can run it two ways: entirely **on your machine** (no Azure), or deploy a **cloud demo**
+to Azure with one command. The official
 [SaaS Accelerator](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator) (MIT)
 is used as a reference (not forked), and the
 [Fulfillment API Emulator](https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator) (MIT)
@@ -23,7 +24,19 @@ stands in for the marketplace, so no real purchase is needed.
 **New to marketplace SaaS?** Start with the [experience walkthrough](docs/walkthrough.md) —
 a plain-language map of who does what, and how it maps to the code here.
 
-## Quickstart
+## Two ways to run it
+
+| | **Run locally** | **Deploy a cloud demo** |
+| --- | --- | --- |
+| For | developing, testing, trying it out | a live URL others can open in a browser |
+| Command | `dotnet run` / `dotnet test` | `azd up` |
+| State store | **SQLite** — zero setup, runs on any machine (incl. arm64) | **Azure SQL** — the authoritative store, reached passwordless via managed identity |
+| Azure needed? | No | Yes (an Azure subscription) |
+
+SQLite is the *local development* store (nothing to install, runs anywhere); Azure SQL is the
+*authoritative* store used in the cloud. Same app, same code — only `Database:Provider` differs.
+
+### Run locally
 
 You only need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 No Docker, no Azure, no marketplace purchase.
@@ -46,6 +59,27 @@ client points at the emulator — so the whole flow works with nothing else inst
 drive the buyer landing page with a real purchase token, follow the
 [end-to-end walkthrough](docs/l2-demo.md).
 
+### Deploy a cloud demo (azd)
+
+One command provisions Azure and deploys the app, so you can share a live URL. This is the
+automated version of the step-by-step [docs/deploy.md](docs/deploy.md).
+
+```bash
+# one-time: install the Azure Developer CLI (https://aka.ms/azd-install),
+# the Azure CLI, and sqlcmd; then sign in:
+azd auth login
+
+azd up      # pick an environment name, subscription, and region
+            # → provisions App Service + Azure SQL and deploys (a few minutes)
+            # → prints the site URL; open <url>/admin
+
+azd down    # remove everything when you're done
+```
+
+By default the demo runs with buyer sign-in **off**, so you can open `/admin` right away —
+no Microsoft Entra app registration needed. For a production-shaped deploy (sign-in on, each
+step explained), see [docs/deploy.md](docs/deploy.md).
+
 <details>
 <summary>Terminology (v0, L2, Tier-1…)</summary>
 
@@ -61,7 +95,9 @@ drive the buyer landing page with a real purchase token, follow the
 
 ## Architecture
 
-Everything in v0 runs on one machine.
+Running **locally**, everything is on one machine (below). Deployed as a **cloud demo**, the
+same app runs on Azure App Service with Azure SQL as the state store — see the cloud topology
+in [docs/deploy.md](docs/deploy.md).
 
 ```mermaid
 flowchart LR
@@ -92,10 +128,11 @@ flowchart LR
 | `src/SaaSAgentSample.Fulfillment` | Fulfillment/Operations API v2 client + server-side webhook validation |
 | `src/SaaSAgentSample.Web` | Buyer SSO landing, connection webhook, publisher admin |
 | `tests/SaaSAgentSample.Tests` | Unit + integration (synthetic end-to-end) tests |
+| `infra/`, `azure.yaml`, `scripts/` | `azd` cloud deploy: Bicep for App Service + Azure SQL, and the post-provision DB grant |
 
 ## Running it locally
 
-The Quickstart above is all you need to see it work. This section fills in the details.
+The Run-locally steps above are all you need to see it work. This section fills in the details.
 
 ### Prerequisites
 
@@ -219,12 +256,15 @@ A few rules this sample never breaks:
 
 ## Deploy
 
-The production target is Azure App Service (.NET 10) + Azure SQL in West US 3, with the app
-connecting to the database passwordless via managed identity. Provisioning is
-human-authorized only — nothing here deploys automatically.
+Target: Azure App Service (.NET 10) + Azure SQL, with the app connecting to the database
+passwordless via managed identity. Provisioning is human-authorized — nothing here deploys
+automatically.
 
-The full walkthrough — provision, managed-identity SQL access, app settings, deploy, and
-wiring the offer's landing page + connection webhook — is in [docs/deploy.md](docs/deploy.md).
+- **One command:** `azd up` — see [Deploy a cloud demo](#deploy-a-cloud-demo-azd) above. It
+  provisions everything defined in `infra/` and deploys the app.
+- **Step by step:** [docs/deploy.md](docs/deploy.md) walks each `az` command — provisioning,
+  managed-identity SQL access, app settings, deploy, and wiring the offer's landing page +
+  connection webhook. Use it to understand each resource, or for a production-shaped setup.
 
 ## Further reading
 

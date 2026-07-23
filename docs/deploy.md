@@ -6,6 +6,12 @@
 
 > 🌐 日本語版: **[deploy.ja.md](deploy.ja.md)**
 
+> **Prefer one command?** `azd up` automates this entire walkthrough — provision, deploy, and
+> the managed-identity database grant. See [Deploy a cloud demo](../README.md#deploy-a-cloud-demo-azd).
+> The steps below are the same thing done by hand: use them to run each command yourself or to
+> understand every resource. (Running the app **locally** instead? See the [README](../README.md) —
+> that path uses SQLite and needs no Azure.)
+
 Target topology for v0 (initial version, minimal footprint):
 
 - **Azure App Service** (Linux, .NET 10) hosts `SaaSAgentSample.Web`.
