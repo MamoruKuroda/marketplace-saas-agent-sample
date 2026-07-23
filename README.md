@@ -62,7 +62,8 @@ drive the buyer landing page with a real purchase token, follow the
 ### Deploy a cloud demo (azd)
 
 One command provisions Azure and deploys the app, so you can share a live URL. This is the
-automated version of the step-by-step [docs/deploy.md](docs/deploy.md).
+automated version of the step-by-step [docs/deploy.md](docs/deploy.md). New to `azd`? See the
+[Azure Developer CLI docs](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview).
 
 ```bash
 # one-time: install the Azure Developer CLI (https://aka.ms/azd-install),
@@ -273,6 +274,7 @@ automatically.
 - Implementing a webhook (JWT validation + Get Operation): <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-webhook>
 - Register a SaaS application: <https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-registration>
 - Deploy an ASP.NET web app to App Service: <https://learn.microsoft.com/en-us/azure/app-service/quickstart-dotnetcore>
+- Azure Developer CLI (azd): <https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview>
 - Connect .NET apps to Azure SQL with managed identity: <https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-sql-database>
 - What is Azure SQL Database: <https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview?view=azuresql>
 - .NET lifecycle (.NET 10 supported to 2028-11-14): <https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-and-net-core>
