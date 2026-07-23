@@ -19,6 +19,10 @@ fi
 
 echo "Granting the app's managed identity [$appName] a database user on $server/$database ..."
 
+# azd and az authenticate separately; make sure az targets the same subscription azd used
+# (otherwise the firewall/sqlcmd calls below can hit the wrong subscription/tenant).
+az account set --subscription "$AZURE_SUBSCRIPTION_ID" >/dev/null
+
 # The server firewall only allows Azure services by default; briefly allow this machine to run T-SQL.
 clientIp="$(curl -s https://api.ipify.org)"
 ruleName="azd-postprovision-$(date +%s)"
