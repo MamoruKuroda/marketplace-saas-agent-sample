@@ -105,7 +105,7 @@ resource emulator 'Microsoft.Web/sites@2024-04-01' = {
       minTlsVersion: '1.2'
       appCommandLine: 'node dist/index.js'
       appSettings: [
-        { name: 'SCM_DO_BUILD_DURING_DEPLOYMENT', value: 'true' }
+        { name: 'SCM_DO_BUILD_DURING_DEPLOYMENT', value: 'false' }
         // The emulator POSTs connection webhooks to the app.
         { name: 'WEBHOOK_URL', value: 'https://${webAppName}.azurewebsites.net/api/webhook' }
         { name: 'PUBLISHER_ID', value: 'FourthCoffee' }

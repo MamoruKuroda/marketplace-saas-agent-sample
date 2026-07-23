@@ -15,4 +15,10 @@ if [ ! -d "$dir/.git" ]; then
 fi
 git -C "$dir" fetch --quiet origin "$commit" 2>/dev/null || true
 git -C "$dir" checkout --quiet "$commit"
+
+# The committed package-lock.json pins resolved tarball URLs to registry.npmjs.org. In some
+# environments (e.g. a subpath-style registry / Central Feed Services proxy) npm rewrites only
+# the host and drops the feed's path prefix, causing 404s. Regenerate the lockfile against the
+# *configured* registry, then build, so azd deploys a ready-to-run app.
+( cd "$dir" && rm -f package-lock.json && npm install --no-fund --no-audit && npm run build )
 echo "Emulator source ready at commit $commit."
