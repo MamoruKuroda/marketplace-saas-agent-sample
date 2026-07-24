@@ -59,5 +59,24 @@ code { font-family:"Cascadia Code",Consolas,ui-monospace,monospace; background:#
 .badge.pending { background:#eff6fc; color:#0f6cbd; }
 
 .muted { color:var(--text-2); }
+
+/* Lifecycle explainer (teaching aid — explains who initiates each transition) */
+.explainer { max-width:760px; margin:0 0 1.5rem; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); box-shadow:var(--shadow); }
+.explainer > summary { cursor:pointer; padding:.75rem 1rem; font-weight:600; font-size:.92rem; list-style:none; color:var(--text); }
+.explainer > summary::-webkit-details-marker { display:none; }
+.explainer > summary::before { content:"\25B8"; color:var(--text-2); margin-right:.5rem; }
+.explainer[open] > summary::before { content:"\25BE"; }
+.explainer .body { padding:0 1rem 1rem; }
+.lc-cols { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media (max-width:640px){ .lc-cols { grid-template-columns:1fr; } }
+.lc-group { border:1px solid var(--border); border-radius:var(--radius-sm); padding:.8rem .9rem; }
+.lc-group h4 { margin:0 0 .5rem; font-size:.78rem; text-transform:uppercase; letter-spacing:.03em; color:var(--text-2); }
+.lc-group ul { margin:0; padding-left:1.05rem; font-size:.9rem; }
+.lc-group li { margin:.15rem 0; }
+.lc-group .who { display:inline-block; font-size:.72rem; font-weight:600; padding:.08rem .5rem; border-radius:999px; margin-bottom:.55rem; }
+.who.pub { background:#eff6fc; color:#0f6cbd; }
+.who.ms { background:#f3f0fa; color:#5c2e91; }
+.explainer .foot { margin:.9rem 0 0; font-size:.88rem; color:var(--text-2); }
+
 footer.site-footer { max-width:var(--maxw); margin:2.5rem auto 3rem; padding:1rem 1.25rem 0; border-top:1px solid var(--border); color:var(--text-2); font-size:.85rem; }
 footer.site-footer a { color:var(--text-2); }

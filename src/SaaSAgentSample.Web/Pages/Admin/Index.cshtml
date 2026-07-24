@@ -14,6 +14,40 @@
 <h1 class="page-title">Subscriptions</h1>
 <p class="subtitle">Authoritative state store &middot; read-only view. State changes require explicit confirmation on the detail page.</p>
 
+<details class="explainer" open>
+    <summary>How the subscription lifecycle works</summary>
+    <div class="body">
+        <p class="muted" style="margin:.2rem 0 1rem">
+            Microsoft Marketplace drives the lifecycle. This app is the publisher side: it activates a
+            purchase, then keeps its state store in sync with events Microsoft sends. It never invents state.
+        </p>
+        <div class="lc-cols">
+            <div class="lc-group">
+                <span class="who pub">Publisher-initiated</span>
+                <p class="muted" style="margin:0 0 .4rem;font-size:.85rem">This app calls the Fulfillment API.</p>
+                <ul>
+                    <li><strong>Resolve → Activate</strong> — confirmed here, only from <em>PendingFulfillmentStart</em>. Starts billing.</li>
+                </ul>
+            </div>
+            <div class="lc-group">
+                <span class="who ms">Microsoft-initiated (webhook)</span>
+                <p class="muted" style="margin:0 0 .4rem;font-size:.85rem">Arrive as a connection webhook; this app validates it, then updates state.</p>
+                <ul>
+                    <li><strong>Change plan / quantity</strong></li>
+                    <li><strong>Suspend / Reinstate</strong> (e.g. payment failure / recovery)</li>
+                    <li><strong>Unsubscribe</strong> (terminal)</li>
+                </ul>
+            </div>
+        </div>
+        <p class="foot">
+            In this demo the <strong>Fulfillment API Emulator</strong> plays Microsoft. To trigger the
+            webhook events above, open the emulator's <strong>Subscriptions</strong> tab and act on a
+            subscription — then refresh here to watch the authoritative state follow.
+            <a href="https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-life-cycle" target="_blank" rel="noopener">Lifecycle reference</a>.
+        </p>
+    </div>
+</details>
+
 @if (Model.Subscriptions.Count == 0)
 {
     <div class="card"><p class="muted">No subscriptions yet. Activate one from a buyer landing link to see it here.</p></div>
