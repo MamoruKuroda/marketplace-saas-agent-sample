@@ -57,17 +57,19 @@ azd up      # pick an environment name, subscription, and region
 azd down    # remove everything when you're done
 ```
 
-Buyer sign-in is **off** by default, so there's nothing to configure — open the URLs and go.
-Then drive the whole lifecycle from the browser:
+Buyer sign-in is **off** by default, so there's nothing to configure. `azd up` prints an
+**Endpoint** URL for each service — the **emulator** and the **app** (run `azd show` to see them
+again). Open the emulator endpoint and drive the whole lifecycle from the browser:
 
-1. Open the **emulator URL** — Microsoft's stand-in Marketplace purchase page. Pick a plan and
-   click **Continue**; it hands the app a purchase token and opens the app's landing page.
-2. On the app's **landing page**, review the resolved subscription and click **Activate** —
-   state becomes **Subscribed**.
-3. Back in the emulator, open **`/subscriptions.html`** and drive lifecycle events —
-   **Suspend**, **Reinstate**, **Change plan**, **Unsubscribe** (each fires the connection webhook).
-4. Open the app's **`/admin`** page to watch the authoritative state follow each event (allow a
-   few seconds for the emulator's notification delay).
+1. On the **emulator** — its home page is the Marketplace purchase page — pick a plan and click
+   **Continue**. The emulator hands the app a purchase token and opens the app's landing page for you.
+2. On the app's **landing page**, review the resolved subscription and click **Activate** — the
+   state becomes **Subscribed**. Follow the **Publisher admin** link on the page to see it stored.
+3. Back in the emulator, click the **Subscriptions** tab (top nav) and drive events on your
+   subscription — **Suspend**, **Reinstate**, **Change plan**, **Unsubscribe** (each fires the
+   connection webhook to the app).
+4. In the app's **Publisher admin**, refresh to watch the authoritative state follow each event
+   (allow a few seconds for the emulator's notification delay).
 
 For a production-shaped deploy against the **real** marketplace (sign-in on, no emulator, each
 step explained), see [docs/deploy.md](docs/deploy.md).
