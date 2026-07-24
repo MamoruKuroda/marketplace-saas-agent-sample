@@ -14,8 +14,8 @@
 - **権威ある購読状態ストア**、
 - **最小限のパブリッシャー管理画面**。
 
-動かし方は2通りあります：**手元のマシンだけ**（Azure 不要）で動かすか、**クラウドのデモ**を
-1コマンドで Azure にデプロイするか。公式の
+動かし方は2通りあります：**クラウドのデモ**を1コマンドで Azure にデプロイするか、**手元のマシンだけ**
+（Azure 不要）で動かすか。公式の
 [SaaS Accelerator](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator)（MIT）は
 参照実装として利用し（fork しません）、
 [Fulfillment API Emulator](https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator)（MIT）が
@@ -26,38 +26,15 @@
 
 ## 動かし方は2通り
 
-| | **ローカルで動かす** | **クラウドにデモをデプロイ** |
+| | **クラウドにデモをデプロイ** | **ローカルで動かす** |
 | --- | --- | --- |
-| 目的 | 開発・テスト・お試し | 他の人がブラウザでライフサイクルをひと通りクリック体験できる公開 URL |
-| コマンド | `dotnet run` / `dotnet test` | `azd up` |
-| 状態ストア | **SQLite** — セットアップ不要、どのマシンでも動く（arm64 含む） | **Azure SQL** — 権威あるストア。マネージド ID でパスワードレス接続 |
-| Azure は必要？ | 不要 | 必要（Azure サブスクリプション） |
+| 目的 | 他の人がブラウザでライフサイクルをひと通りクリック体験できる公開 URL | 開発・テスト・お試し |
+| コマンド | `azd up` | `dotnet run` / `dotnet test` |
+| 状態ストア | **Azure SQL** — 権威あるストア。マネージド ID でパスワードレス接続 | **SQLite** — セットアップ不要、どのマシンでも動く（arm64 含む） |
+| Azure は必要？ | 必要（Azure サブスクリプション） | 不要 |
 
 SQLite は*ローカル開発*用のストア（何もインストール不要でどこでも動く）、Azure SQL はクラウドで使う
 *権威ある*ストアです。アプリもコードも同じ — 違うのは `Database:Provider` だけ。
-
-### ローカルで動かす
-
-必要なのは [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) だけです。
-Docker・Azure・マーケットプレースでの購入は不要です。
-
-```bash
-git clone https://github.com/MamoruKuroda/marketplace-saas-agent-sample
-cd marketplace-saas-agent-sample
-
-# 購読ライフサイクル全体（Resolve → Activate → Webhook → 状態）を
-# ローカル HTTP 上でエンドツーエンドに実証:
-dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
-
-# …または、アプリを起動してパブリッシャー管理画面を開く:
-dotnet run --project src/SaaSAgentSample.Web
-#   → http://localhost:5134/admin
-```
-
-開発時はローカルの SQLite ストアを使い、サインインは無効、Fulfillment クライアントは
-エミュレーター向けに設定されます — つまり他に何もインストールせずに一連のフローが動きます。
-購入者ランディングを実際の購入トークンで駆動するには、
-[エンドツーエンドウォークスルー](docs/l2-demo.ja.md) を参照してください。
 
 ### クラウドにデモをデプロイ（azd）
 
@@ -95,6 +72,29 @@ azd down    # 使い終わったら一括削除
 **実際の**マーケットプレースを相手にした本番寄りの構成（サインイン有効・エミュレーターなし・各手順の
 解説つき）は [docs/deploy.ja.md](docs/deploy.ja.md) を参照してください。
 
+### ローカルで動かす
+
+必要なのは [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) だけです。
+Docker・Azure・マーケットプレースでの購入は不要です。
+
+```bash
+git clone https://github.com/MamoruKuroda/marketplace-saas-agent-sample
+cd marketplace-saas-agent-sample
+
+# 購読ライフサイクル全体（Resolve → Activate → Webhook → 状態）を
+# ローカル HTTP 上でエンドツーエンドに実証:
+dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
+
+# …または、アプリを起動してパブリッシャー管理画面を開く:
+dotnet run --project src/SaaSAgentSample.Web
+#   → http://localhost:5134/admin
+```
+
+開発時はローカルの SQLite ストアを使い、サインインは無効、Fulfillment クライアントは
+エミュレーター向けに設定されます — つまり他に何もインストールせずに一連のフローが動きます。
+ローカル開発の詳細（プロバイダ・マイグレーション・設定・SQL Server テスト）は
+[docs/develop.ja.md](docs/develop.ja.md) を参照。
+
 <details>
 <summary>用語（v0・L2・Tier-1 など）</summary>
 
@@ -129,118 +129,20 @@ azd down    # 使い終わったら一括削除
 | `tests/SaaSAgentSample.Tests` | ユニット＋統合（合成エンドツーエンド）テスト |
 | `infra/`・`azure.yaml`・`scripts/` | `azd` クラウドデプロイ：App Service ＋ Azure SQL ＋ エミュレーター（Container Apps）の Bicep と、取得/デプロイ後フック |
 
-## ローカルで動かす
+## ローカルで開発・テストする
 
-上の「ローカルで動かす」手順だけで動作を確認できます。ここでは詳細を補足します。
+上の [ローカルで動かす](#ローカルで動かす) クイックスタートだけで動作を確認できます。データベース
+プロバイダ（SQLite / SQL Server / Azure SQL）・マイグレーション・アプリ起動・設定・SQL Server 統合
+テストなど、ローカル開発のすべては **[docs/develop.ja.md](docs/develop.ja.md)** を参照してください。
 
-### 前提条件
-
-- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)。
-- 状態ストア用のデータベース。`dotnet run` は既定で **SQLite** を使うため、開始に追加の準備は
-  不要です。SQL Server 経路（権威あるストア）を使う場合は、ホストに応じて選択します：
-
-  | ホスト | データベース | 方法 |
-  | --- | --- | --- |
-  | x86-64（Linux / Intel Mac / Windows x64） | SQL Server | 同梱の `docker-compose.yml` で Docker |
-  | arm64（Apple Silicon・Windows-on-ARM） | SQLite | 組み込みプロバイダ、ローカル開発専用 |
-  | Windows x64（Docker なし） | SQL Server LocalDB | 同じ接続文字列の切り替え |
-
-- Docker ベースのエンドツーエンド経路には [Fulfillment API Emulator](docs/l2-demo.ja.md)。
-  （自動実証は Docker 不要です。）
-
-<details>
-<summary>データベースプロバイダの切り替えとマイグレーション</summary>
-
-以下のキー（`appsettings.Development.json` または環境変数）でプロバイダを選択します：
-
-| `Database:Provider` | `Database:ConnectionString` の例 |
-| --- | --- |
-| `SqlServer`（既定） | `Server=localhost,1433;Database=SaasAgentSample;User Id=sa;<password>;TrustServerCertificate=True;` |
-| `Sqlite` | `Data Source=./saas-agent-sample.db` |
-| `InMemory` | *(無視される — テスト専用)* |
-
-x86-64 でローカル SQL Server を起動（イメージ `mcr.microsoft.com/mssql/server:2022-latest`）：
-
-```bash
-cp .env.example .env       # then edit MSSQL_SA_PASSWORD to a strong value
-docker compose up -d sqlserver
-```
-
-起動時、SQL Server 経路は `DbContext.Database.Migrate()`（権威あるマイグレーションは
-`src/SaaSAgentSample.Data/Persistence/Migrations/`）を実行します。SQLite 経路は
-`EnsureCreated()` を実行するため、arm64 開発者は別途マイグレーション履歴を維持せずに反復開発できます。
-
-</details>
-
-### ビルドとテスト
-
-```bash
-dotnet build SaaSAgentSample.slnx
-dotnet test SaaSAgentSample.slnx
-```
-
-既定のテスト実行は SQLite / InMemory 経路のみを対象にします。
-
-<details>
-<summary>SQL Server 統合テストもあわせて実行する</summary>
-
-上記の compose サービスを起動し、接続文字列をエクスポートします：
-
-```bash
-export SQL_SERVER_CONNECTION='Server=localhost,1433;Database=SaasAgentSample;User Id=sa;<your MSSQL_SA_PASSWORD>;TrustServerCertificate=True;'
-dotnet test SaaSAgentSample.slnx
-```
-
-</details>
-
-### アプリの起動
-
-```bash
-dotnet run --project src/SaaSAgentSample.Web
-```
-
-`Development` 環境では、SQLite ストアを使い、購入者サインインを無効化
-（`Landing:RequireAuthentication=false`）、Fulfillment クライアントをローカルエミュレーター向けに設定し、
-未署名の Webhook トークンを受理します — つまり Entra も実購入もなしで一連のフローがローカルで動きます。
-
-| パス | 内容 |
-| --- | --- |
-| `/?token=<purchase-token>` | 購入者 SSO ランディング（Resolve → 明示確認 Activate） |
-| `/admin`, `/admin/{id}` | パブリッシャー管理（閲覧＋明示確認 Activate） |
-| `POST /api/webhook` | 接続 Webhook（サーバー側で Entra JWT ＋ Get Operation 検証） |
-
-<details>
-<summary>設定リファレンス</summary>
-
-`appsettings*.json`・環境変数（ネストキーは `__`）・App Service 設定からバインドします。
-シークレットは**プレースホルダのみ**。実値をコミットしないでください。
-
-| キー | 目的 | ローカル既定 |
-| --- | --- | --- |
-| `Database:Provider` | `SqlServer` \| `Sqlite` \| `InMemory` | `Sqlite` |
-| `Database:ConnectionString` | 状態ストアの接続 | SQLite ファイル |
-| `Landing:RequireAuthentication` | ランディング/管理で Entra サインインを必須にする | `false`（dev） |
-| `AzureAd:*` | 購入者サインイン用アプリ（マルチテナント・authority `common`） | プレースホルダの client id |
-| `Fulfillment:BaseUrl` | Fulfillment API のベース（`/api` を含む） | エミュレーター |
-| `Fulfillment:ApiVersion` | API バージョン | `2018-08-31` |
-| `Fulfillment:Webhook:Audience` | 期待する JWT audience = パブリッシャーアプリの client id | プレースホルダ |
-| `Fulfillment:Webhook:ExpectedAppId` | 期待する `appid`/`azp` クレーム | 公開 Marketplace アプリ ID |
-| `Fulfillment:Webhook:MetadataAddress` | 署名鍵取得用の Entra OpenID メタデータ | — |
-| `Fulfillment:Webhook:RequireSignedToken` | JWT 署名を必須にする（**本番では true**） | `false`（dev） |
-
-</details>
-
-## エンドツーエンドで実証する（L2）
-
-フルフィルメントの一連（Resolve → Activate → Webhook → 状態）を実購入なしで通しで実行します。
-エミュレーターが実 HTTP 上で Microsoft の代役を務めます。自動テストは Docker なしで CI 上でも
-実行され、手動手順では実エミュレーターを Docker で起動します。
+**エンドツーエンドで実証（L2）:** フルフィルメントの一連（Resolve → Activate → Webhook → 状態）を
+実購入なしで通しで実行します。自動テストが実 HTTP 上で駆動し、Docker は不要です：
 
 ```bash
 dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 ```
 
-手動のエミュレーター手順を含む詳細は **[docs/l2-demo.ja.md](docs/l2-demo.ja.md)**。
+手動のエミュレーター手順を含む詳細は [docs/l2-demo.ja.md](docs/l2-demo.ja.md)。
 
 ## ガードレール
 
