@@ -33,6 +33,7 @@
         <div class="card">
             <h2>Activated</h2>
             <p>@Model.Message</p>
+            <p><a href="/admin">View all subscriptions in the publisher admin &rarr;</a></p>
         </div>
     }
     else if (r is not null)
@@ -66,6 +67,6 @@
         </div>
     }
 
-    <p class="muted">Experimental teaching sample - not for production use.</p>
+    <p class="muted"><a href="/admin">Publisher admin</a> &middot; Experimental teaching sample - not for production use.</p>
 </body>
 </html>
