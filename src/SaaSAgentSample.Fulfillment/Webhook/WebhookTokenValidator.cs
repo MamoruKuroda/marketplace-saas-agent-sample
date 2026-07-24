@@ -25,14 +25,18 @@ public sealed class WebhookTokenValidator : IWebhookTokenValidator
     public async Task<WebhookTokenValidationResult> ValidateAsync(string? authorizationHeaderValue, CancellationToken cancellationToken = default)
     {
         var token = ExtractToken(authorizationHeaderValue);
-        if (string.IsNullOrWhiteSpace(token))
-        {
-            return WebhookTokenValidationResult.Invalid("Missing Authorization token.");
-        }
 
         if (!_options.RequireSignedToken)
         {
-            // The local emulator sends unsigned notifications; parse leniently (dev only).
+            // The local emulator sends unsigned notifications and, by default, no Authorization
+            // token at all. Accept a missing or opaque token in this dev-only mode; the mandatory
+            // Get Operation stage still authorizes the payload against the emulator. Production
+            // sets RequireSignedToken = true, where the token is required and fully validated below.
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return WebhookTokenValidationResult.Valid(null);
+            }
+
             try
             {
                 var parsed = _handler.ReadJsonWebToken(token);
@@ -42,6 +46,11 @@ public sealed class WebhookTokenValidator : IWebhookTokenValidator
             {
                 return WebhookTokenValidationResult.Invalid($"Unparseable token: {ex.GetType().Name}.");
             }
+        }
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return WebhookTokenValidationResult.Invalid("Missing Authorization token.");
         }
 
         TokenValidationResult result;
