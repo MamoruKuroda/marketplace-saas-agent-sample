@@ -1,0 +1,28 @@
+@{
+    var path = (Context.Request.Path.Value ?? "/").ToLowerInvariant();
+    var onAdmin = path.StartsWith("/admin");
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@(ViewData["Title"] ?? "Marketplace SaaS sample")</title>
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="bar">
+            <a class="brand" href="/"><span class="logo">M</span><span>Marketplace SaaS sample<small>Fulfillment plane</small></span></a>
+            <nav class="top">
+                <a href="/" class="@(onAdmin ? "" : "active")">Home</a>
+                <a href="/admin" class="@(onAdmin ? "active" : "")">Publisher admin</a>
+            </nav>
+        </div>
+    </header>
+    <main>
+        @RenderBody()
+    </main>
+    <footer class="site-footer">Experimental teaching sample &mdash; not for production use.</footer>
+</body>
+</html>
