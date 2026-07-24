@@ -1,72 +1,53 @@
 @page
 @model SaaSAgentSample.Web.Pages.IndexModel
 @{
-    Layout = null;
+    ViewData["Title"] = "Activate your subscription";
     var r = Model.Resolved;
     var sub = r?.Subscription;
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Activate your subscription</title>
-    <style>
-        body { font-family: system-ui, "Segoe UI", Arial, sans-serif; max-width: 680px; margin: 2rem auto; padding: 0 1rem; color: #1b1b1f; }
-        .card { border: 1px solid #ddd; border-radius: 8px; padding: 1.25rem; margin: 1rem 0; }
-        .muted { color: #666; }
-        button { background: #0b5cad; color: #fff; border: 0; border-radius: 6px; padding: .6rem 1.1rem; font-size: 1rem; cursor: pointer; }
-        dl { display: grid; grid-template-columns: auto 1fr; gap: .25rem .75rem; }
-        dt { color: #666; }
-    </style>
-</head>
-<body>
-    <h1>SaaS subscription activation</h1>
+<h1 class="page-title">Activate your subscription</h1>
+<p class="subtitle">Review the plan below, then confirm. Activation starts billing.</p>
 
-    @if (User?.Identity?.IsAuthenticated == true)
-    {
-        <p class="muted">Signed in as @User.Identity!.Name</p>
-    }
+@if (User?.Identity?.IsAuthenticated == true)
+{
+    <p class="muted">Signed in as @User.Identity!.Name</p>
+}
 
-    @if (Model.IsActivated)
-    {
-        <div class="card">
-            <h2>Activated</h2>
-            <p>@Model.Message</p>
-            <p><a href="/admin">View all subscriptions in the publisher admin &rarr;</a></p>
+@if (Model.IsActivated)
+{
+    <div class="banner">
+        <span class="ico">&#10003;</span>
+        <div>
+            <strong>Activated.</strong> @Model.Message
+            <div style="margin-top:.4rem"><a href="/admin">View all subscriptions in the publisher admin &rarr;</a></div>
         </div>
-    }
-    else if (r is not null)
-    {
-        <div class="card">
-            <h2>Confirm activation</h2>
-            <p class="muted">Review the plan below, then activate. Activation starts billing.</p>
-            <dl>
-                <dt>Subscription</dt><dd>@(r.SubscriptionName ?? sub?.Name)</dd>
-                <dt>Offer</dt><dd>@(r.OfferId ?? sub?.OfferId)</dd>
-                <dt>Plan</dt><dd>@(r.PlanId ?? sub?.PlanId)</dd>
-                <dt>Quantity</dt><dd>@(r.Quantity?.ToString() ?? "-")</dd>
-                <dt>Status</dt><dd>@sub?.SaasSubscriptionStatus</dd>
-            </dl>
-            <form method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="subscriptionId" value="@(sub?.Id ?? r.Id)" />
-                <input type="hidden" name="planId" value="@(r.PlanId ?? sub?.PlanId)" />
-                @if (r.Quantity is int q)
-                {
-                    <input type="hidden" name="quantity" value="@q" />
-                }
-                <button type="submit">Activate subscription</button>
-            </form>
-        </div>
-    }
-    else
-    {
-        <div class="card">
-            <p>@(Model.Message ?? "Nothing to show.")</p>
-        </div>
-    }
-
-    <p class="muted"><a href="/admin">Publisher admin</a> &middot; Experimental teaching sample - not for production use.</p>
-</body>
-</html>
+    </div>
+}
+else if (r is not null)
+{
+    <div class="card">
+        <h2>Confirm activation</h2>
+        <p class="hint">Resolved from your marketplace purchase token.</p>
+        <dl class="kv">
+            <dt>Subscription</dt><dd>@(r.SubscriptionName ?? sub?.Name)</dd>
+            <dt>Offer</dt><dd>@(r.OfferId ?? sub?.OfferId)</dd>
+            <dt>Plan</dt><dd>@(r.PlanId ?? sub?.PlanId)</dd>
+            <dt>Quantity</dt><dd>@(r.Quantity?.ToString() ?? "—")</dd>
+            <dt>Status</dt><dd><span class="badge pending">@sub?.SaasSubscriptionStatus</span></dd>
+        </dl>
+        <form method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="subscriptionId" value="@(sub?.Id ?? r.Id)" />
+            <input type="hidden" name="planId" value="@(r.PlanId ?? sub?.PlanId)" />
+            @if (r.Quantity is int q)
+            {
+                <input type="hidden" name="quantity" value="@q" />
+            }
+            <button type="submit" class="btn primary">Activate subscription</button>
+        </form>
+    </div>
+}
+else
+{
+    <div class="card"><p class="muted">@(Model.Message ?? "Nothing to show.")</p></div>
+}

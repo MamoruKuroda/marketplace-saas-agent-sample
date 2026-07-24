@@ -1,34 +1,26 @@
 @page "/admin"
+@using SaaSAgentSample.Core.Subscriptions
 @model SaaSAgentSample.Web.Pages.Admin.IndexModel
 @{
-    Layout = null;
+    ViewData["Title"] = "Publisher admin — subscriptions";
+    static string BadgeClass(SubscriptionState state) => state switch
+    {
+        SubscriptionState.Subscribed => "subscribed",
+        SubscriptionState.Suspended => "suspended",
+        SubscriptionState.Unsubscribed => "unsubscribed",
+        _ => "pending",
+    };
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Publisher admin - subscriptions</title>
-    <style>
-        body { font-family: system-ui, "Segoe UI", Arial, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #1b1b1f; }
-        table { border-collapse: collapse; width: 100%; }
-        th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid #e5e5e5; font-size: .95rem; }
-        th { color: #555; font-weight: 600; }
-        code { background: #f3f3f3; padding: .1rem .3rem; border-radius: 4px; }
-        .muted { color: #666; }
-        .state { font-weight: 600; }
-    </style>
-</head>
-<body>
-    <h1>Subscriptions</h1>
-    <p class="muted">Authoritative state store. Read-only view; activation requires explicit confirmation on the detail page.</p>
+<h1 class="page-title">Subscriptions</h1>
+<p class="subtitle">Authoritative state store &middot; read-only view. State changes require explicit confirmation on the detail page.</p>
 
-    @if (Model.Subscriptions.Count == 0)
-    {
-        <p>No subscriptions yet.</p>
-    }
-    else
-    {
+@if (Model.Subscriptions.Count == 0)
+{
+    <div class="card"><p class="muted">No subscriptions yet. Activate one from a buyer landing link to see it here.</p></div>
+}
+else
+{
+    <div class="table-wrap">
         <table>
             <thead>
                 <tr>
@@ -46,18 +38,15 @@
                 {
                     <tr>
                         <td><code>@s.MarketplaceSubscriptionId</code></td>
-                        <td>@(string.IsNullOrEmpty(s.Name) ? "-" : s.Name)</td>
+                        <td>@(string.IsNullOrEmpty(s.Name) ? "—" : s.Name)</td>
                         <td>@s.OfferId</td>
                         <td>@s.PlanId</td>
-                        <td class="state">@s.State</td>
-                        <td>@s.UpdatedAt.UtcDateTime.ToString("u")</td>
+                        <td><span class="badge @BadgeClass(s.State)">@s.State</span></td>
+                        <td class="muted">@s.UpdatedAt.UtcDateTime.ToString("u")</td>
                         <td><a href="/admin/@s.Id">Details</a></td>
                     </tr>
                 }
             </tbody>
         </table>
-    }
-
-    <p class="muted">Experimental teaching sample - not for production use.</p>
-</body>
-</html>
+    </div>
+}
