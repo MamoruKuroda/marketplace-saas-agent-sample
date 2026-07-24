@@ -21,6 +21,10 @@
   [Commercial Marketplace SaaS API Emulator](https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator)
   を Docker で起動し、その UI から駆動します。
 
+> **ローカルに何もインストールしたくない場合は？** [クラウドデモ](../README.ja.md#クラウドにデモをデプロイazd)
+> （`azd up`）が、このエミュレーターをアプリと一緒に Azure へデプロイするので、ブラウザでライフサイクル全体を
+> クリック体験できます。以下は**ローカル Docker** の手順です。
+
 ---
 
 ## A. 自動の合成 L2（推奨）

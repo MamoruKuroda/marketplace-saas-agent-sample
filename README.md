@@ -28,7 +28,7 @@ a plain-language map of who does what, and how it maps to the code here.
 
 | | **Run locally** | **Deploy a cloud demo** |
 | --- | --- | --- |
-| For | developing, testing, trying it out | a live URL others can open in a browser |
+| For | developing, testing, trying it out | a live URL others can click through the full lifecycle |
 | Command | `dotnet run` / `dotnet test` | `azd up` |
 | State store | **SQLite** — zero setup, runs on any machine (incl. arm64) | **Azure SQL** — the authoritative store, reached passwordless via managed identity |
 | Azure needed? | No | Yes (an Azure subscription) |
@@ -61,8 +61,11 @@ drive the buyer landing page with a real purchase token, follow the
 
 ### Deploy a cloud demo (azd)
 
-One command provisions Azure and deploys the app, so you can share a live URL. This is the
-automated version of the step-by-step [docs/deploy.md](docs/deploy.md). New to `azd`? See the
+One command provisions Azure and deploys three things — the **app**, its **Azure SQL** state
+store, and the **Fulfillment API Emulator** (Microsoft's token-free marketplace stand-in, on
+Azure Container Apps). The result is a live URL anyone can click through the whole subscription
+lifecycle — no local setup, no real purchase. This is the automated version of the step-by-step
+[docs/deploy.md](docs/deploy.md). New to `azd`? See the
 [Azure Developer CLI docs](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview).
 
 ```bash
@@ -71,14 +74,25 @@ automated version of the step-by-step [docs/deploy.md](docs/deploy.md). New to `
 azd auth login
 
 azd up      # pick an environment name, subscription, and region
-            # → provisions App Service + Azure SQL and deploys (a few minutes)
-            # → prints the site URL; open <url>/admin
+            # → provisions App Service + Azure SQL + the emulator (Container Apps)
+            # → deploys everything (a few minutes), then prints the app and emulator URLs
 
 azd down    # remove everything when you're done
 ```
 
-By default the demo runs with buyer sign-in **off**, so you can open `/admin` right away —
-no Microsoft Entra app registration needed. For a production-shaped deploy (sign-in on, each
+Buyer sign-in is **off** by default, so there's nothing to configure — open the URLs and go.
+Then drive the whole lifecycle from the browser:
+
+1. Open the **emulator URL** — Microsoft's stand-in Marketplace purchase page. Pick a plan and
+   click **Continue**; it hands the app a purchase token and opens the app's landing page.
+2. On the app's **landing page**, review the resolved subscription and click **Activate** —
+   state becomes **Subscribed**.
+3. Back in the emulator, open **`/subscriptions.html`** and drive lifecycle events —
+   **Suspend**, **Reinstate**, **Change plan**, **Unsubscribe** (each fires the connection webhook).
+4. Open the app's **`/admin`** page to watch the authoritative state follow each event (allow a
+   few seconds for the emulator's notification delay).
+
+For a production-shaped deploy against the **real** marketplace (sign-in on, no emulator, each
 step explained), see [docs/deploy.md](docs/deploy.md).
 
 <details>
@@ -96,9 +110,11 @@ step explained), see [docs/deploy.md](docs/deploy.md).
 
 ## Architecture
 
-Running **locally**, everything is on one machine (below). Deployed as a **cloud demo**, the
-same app runs on Azure App Service with Azure SQL as the state store — see the cloud topology
-in [docs/deploy.md](docs/deploy.md).
+Running **locally**, everything is on one machine (below). Deployed as a **cloud demo** with
+`azd`, the same pieces run on Azure — the app on App Service, Azure SQL as the state store, and
+the Fulfillment API Emulator on Azure Container Apps — so the whole clickable flow works with
+nothing installed. (The production-shaped [docs/deploy.md](docs/deploy.md) targets the *real*
+marketplace instead of the emulator.)
 
 ```mermaid
 flowchart LR
@@ -129,7 +145,7 @@ flowchart LR
 | `src/SaaSAgentSample.Fulfillment` | Fulfillment/Operations API v2 client + server-side webhook validation |
 | `src/SaaSAgentSample.Web` | Buyer SSO landing, connection webhook, publisher admin |
 | `tests/SaaSAgentSample.Tests` | Unit + integration (synthetic end-to-end) tests |
-| `infra/`, `azure.yaml`, `scripts/` | `azd` cloud deploy: Bicep for App Service + Azure SQL, and the post-provision DB grant |
+| `infra/`, `azure.yaml`, `scripts/` | `azd` cloud deploy: Bicep for App Service + Azure SQL + the emulator (Container Apps), plus the fetch/post-provision hooks |
 
 ## Running it locally
 
@@ -262,7 +278,8 @@ passwordless via managed identity. Provisioning is human-authorized — nothing 
 automatically.
 
 - **One command:** `azd up` — see [Deploy a cloud demo](#deploy-a-cloud-demo-azd) above. It
-  provisions everything defined in `infra/` and deploys the app.
+  provisions everything defined in `infra/` and deploys the app **and the emulator**, for a
+  fully clickable demo.
 - **Step by step:** [docs/deploy.md](docs/deploy.md) walks each `az` command — provisioning,
   managed-identity SQL access, app settings, deploy, and wiring the offer's landing page +
   connection webhook. Use it to understand each resource, or for a production-shaped setup.
