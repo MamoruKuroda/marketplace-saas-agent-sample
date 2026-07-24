@@ -17,4 +17,12 @@ public sealed class FulfillmentOptions
 
     /// <summary>API version query-string value. v2 uses <c>2018-08-31</c>.</summary>
     public string ApiVersion { get; set; } = "2018-08-31";
+
+    /// <summary>
+    /// Optional publisher id sent as the <c>publisherId</c> query-string parameter. The
+    /// token-free Fulfillment API Emulator uses this to identify the publisher when the request
+    /// carries no bearer token. Leave empty in production, where the publisher is derived from
+    /// the bearer token's claims instead.
+    /// </summary>
+    public string? PublisherId { get; set; }
 }

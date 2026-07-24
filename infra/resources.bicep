@@ -87,6 +87,8 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
         // interactive. The emulator sends unsigned webhook tokens, so signature enforcement is off.
         { name: 'Fulfillment__BaseUrl', value: 'https://${emulator.properties.configuration.ingress.fqdn}/api' }
         { name: 'Fulfillment__ApiVersion', value: '2018-08-31' }
+        // Emulator is token-free: identify the publisher via the query param (matches PUBLISHER_ID).
+        { name: 'Fulfillment__PublisherId', value: 'FourthCoffee' }
         { name: 'Fulfillment__Webhook__Audience', value: webhookAudience }
         { name: 'Fulfillment__Webhook__ExpectedAppId', value: marketplaceAppId }
         { name: 'Fulfillment__Webhook__MetadataAddress', value: '${environment().authentication.loginEndpoint}common/v2.0/.well-known/openid-configuration' }
