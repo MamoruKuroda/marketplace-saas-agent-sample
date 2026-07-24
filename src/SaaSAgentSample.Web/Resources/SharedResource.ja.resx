@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Layout / nav -->
+  <data name="Home" xml:space="preserve"><value>ホーム</value></data>
+  <data name="Publisher admin" xml:space="preserve"><value>パブリッシャー管理</value></data>
+  <data name="Fulfillment plane" xml:space="preserve"><value>フルフィルメント層</value></data>
+  <data name="Experimental teaching sample — not for production use." xml:space="preserve"><value>実験的な教材サンプル — 本番利用は想定していません。</value></data>
+
+  <!-- Landing (Index) -->
+  <data name="Activate your subscription" xml:space="preserve"><value>サブスクリプションを有効化</value></data>
+  <data name="Review the plan below, then confirm. Activation starts billing." xml:space="preserve"><value>以下のプランを確認してから有効化してください。有効化すると課金が始まります。</value></data>
+  <data name="Signed in as {0}" xml:space="preserve"><value>{0} でサインイン中</value></data>
+  <data name="Activated." xml:space="preserve"><value>有効化しました。</value></data>
+  <data name="View all subscriptions in the publisher admin →" xml:space="preserve"><value>パブリッシャー管理ですべてのサブスクリプションを表示 →</value></data>
+  <data name="Confirm activation" xml:space="preserve"><value>有効化の確認</value></data>
+  <data name="Resolved from your marketplace purchase token." xml:space="preserve"><value>マーケットプレースの購入トークンから解決した内容です。</value></data>
+  <data name="Subscription" xml:space="preserve"><value>サブスクリプション</value></data>
+  <data name="Offer" xml:space="preserve"><value>オファー</value></data>
+  <data name="Plan" xml:space="preserve"><value>プラン</value></data>
+  <data name="Quantity" xml:space="preserve"><value>数量</value></data>
+  <data name="Status" xml:space="preserve"><value>状態</value></data>
+  <data name="Activate subscription" xml:space="preserve"><value>サブスクリプションを有効化</value></data>
+  <data name="Nothing to show." xml:space="preserve"><value>表示できるものがありません。</value></data>
+  <data name="No purchase token was provided. Open this page from the Marketplace 'Configure account' link." xml:space="preserve"><value>購入トークンがありません。マーケットプレースの「アカウントの構成」リンクからこのページを開いてください。</value></data>
+  <data name="The purchase could not be resolved." xml:space="preserve"><value>購入を解決できませんでした。</value></data>
+  <data name="The purchase could not be resolved (the token may be invalid or expired)." xml:space="preserve"><value>購入を解決できませんでした（トークンが無効または期限切れの可能性があります）。</value></data>
+  <data name="Missing subscription details." xml:space="preserve"><value>サブスクリプション情報が不足しています。</value></data>
+  <data name="Your subscription is now active." xml:space="preserve"><value>サブスクリプションが有効になりました。</value></data>
+  <data name="Activation could not be completed. Please retry from the Marketplace." xml:space="preserve"><value>有効化を完了できませんでした。マーケットプレースからやり直してください。</value></data>
+  <data name="Activation failed. Please try again." xml:space="preserve"><value>有効化に失敗しました。もう一度お試しください。</value></data>
+
+  <!-- Admin list -->
+  <data name="Publisher admin — subscriptions" xml:space="preserve"><value>パブリッシャー管理 — サブスクリプション</value></data>
+  <data name="Subscriptions" xml:space="preserve"><value>サブスクリプション</value></data>
+  <data name="Authoritative state store · read-only view. State changes require explicit confirmation on the detail page." xml:space="preserve"><value>権威ある状態ストア・読み取り専用ビュー。状態変更は詳細ページでの明示的な確認が必要です。</value></data>
+  <data name="How the subscription lifecycle works" xml:space="preserve"><value>サブスクリプションのライフサイクルの仕組み</value></data>
+  <data name="Microsoft Marketplace drives the lifecycle. This app is the publisher side: it activates a purchase, then keeps its state store in sync with events Microsoft sends. It never invents state." xml:space="preserve"><value>ライフサイクルを駆動するのは Microsoft Marketplace です。このアプリはパブリッシャー側として、購入を有効化し、その後は Microsoft から届くイベントに合わせて状態ストアを同期し続けます。状態を勝手に作り出すことはありません。</value></data>
+  <data name="Publisher-initiated" xml:space="preserve"><value>パブリッシャー起点</value></data>
+  <data name="This app calls the Fulfillment API." xml:space="preserve"><value>このアプリが Fulfillment API を呼び出します。</value></data>
+  <data name="Resolve → Activate — confirmed here, only from PendingFulfillmentStart. Starts billing." xml:space="preserve"><value>Resolve → Activate — ここで確認します（PendingFulfillmentStart のときのみ）。課金が始まります。</value></data>
+  <data name="Microsoft-initiated (webhook)" xml:space="preserve"><value>Microsoft 起点（Webhook）</value></data>
+  <data name="Arrive as a connection webhook; this app validates it, then updates state." xml:space="preserve"><value>接続 Webhook として届きます。このアプリが検証してから状態を更新します。</value></data>
+  <data name="Change plan / quantity" xml:space="preserve"><value>プラン/数量の変更</value></data>
+  <data name="Suspend / Reinstate (e.g. payment failure / recovery)" xml:space="preserve"><value>一時停止 / 再開（例：支払い失敗 / 復旧）</value></data>
+  <data name="Unsubscribe (terminal)" xml:space="preserve"><value>解約（終端）</value></data>
+  <data name="In this demo the Fulfillment API Emulator plays Microsoft. To trigger the webhook events above, open the emulator's Subscriptions tab and act on a subscription — then refresh here to watch the authoritative state follow." xml:space="preserve"><value>このデモでは Fulfillment API Emulator が Microsoft 役を務めます。上記の Webhook イベントを発生させるには、エミュレーターの Subscriptions タブを開いてサブスクリプションを操作し、その後この画面を再読み込みして権威ある状態が追随する様子を確認してください。</value></data>
+  <data name="Lifecycle reference" xml:space="preserve"><value>ライフサイクルのリファレンス</value></data>
+  <data name="Marketplace subscription" xml:space="preserve"><value>マーケットプレース サブスクリプション</value></data>
+  <data name="Name" xml:space="preserve"><value>名前</value></data>
+  <data name="State" xml:space="preserve"><value>状態</value></data>
+  <data name="Updated (UTC)" xml:space="preserve"><value>更新 (UTC)</value></data>
+  <data name="No subscriptions yet. Activate one from a buyer landing link to see it here." xml:space="preserve"><value>まだサブスクリプションはありません。購入者ランディングのリンクから有効化するとここに表示されます。</value></data>
+  <data name="Details" xml:space="preserve"><value>詳細</value></data>
+
+  <!-- Detail -->
+  <data name="Subscription detail" xml:space="preserve"><value>サブスクリプション詳細</value></data>
+  <data name="← All subscriptions" xml:space="preserve"><value>← すべてのサブスクリプション</value></data>
+  <data name="Created (UTC)" xml:space="preserve"><value>作成 (UTC)</value></data>
+  <data name="Activation calls the Fulfillment Activate API and starts billing. Confirm before proceeding." xml:space="preserve"><value>有効化は Fulfillment の Activate API を呼び出し、課金を開始します。実行前に確認してください。</value></data>
+  <data name="No publisher actions available from the current state ({0})." xml:space="preserve"><value>現在の状態（{0}）ではパブリッシャーが行える操作はありません。</value></data>
+  <data name="From here, changes (Suspend, Reinstate, Change plan, Unsubscribe) are Microsoft-initiated and arrive as a connection webhook — this app validates it and updates state. In this demo, trigger them from the emulator's Subscriptions tab, then refresh this page." xml:space="preserve"><value>ここから先の変更（Suspend・Reinstate・Change plan・Unsubscribe）は Microsoft 起点で、接続 Webhook として届きます — このアプリが検証して状態を更新します。このデモでは、エミュレーターの Subscriptions タブから発生させ、この画面を再読み込みしてください。</value></data>
+  <data name="Subscription activated." xml:space="preserve"><value>サブスクリプションを有効化しました。</value></data>
+  <data name="Subscription was already active." xml:space="preserve"><value>サブスクリプションは既に有効でした。</value></data>
+  <data name="Subscription not found." xml:space="preserve"><value>サブスクリプションが見つかりません。</value></data>
+  <data name="Subscription cannot be activated from its current state." xml:space="preserve"><value>現在の状態からは有効化できません。</value></data>
+  <data name="Activation failed while calling the Fulfillment API." xml:space="preserve"><value>Fulfillment API の呼び出し中に有効化が失敗しました。</value></data>
+  <data name="Unknown result." xml:space="preserve"><value>不明な結果です。</value></data>
+</root>

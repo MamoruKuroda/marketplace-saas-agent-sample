@@ -21,6 +21,10 @@ nav.top { margin-left:auto; display:flex; gap:.25rem; }
 nav.top a { padding:.4rem .75rem; border-radius:var(--radius-sm); color:var(--text-2); font-size:.9rem; }
 nav.top a:hover { background:#f3f2f1; text-decoration:none; color:var(--text); }
 nav.top a.active { color:var(--brand); font-weight:600; }
+.lang { display:inline-flex; align-items:center; gap:.15rem; margin-left:.5rem; padding-left:.6rem; border-left:1px solid var(--border); }
+.lang a { padding:.3rem .5rem; border-radius:var(--radius-sm); color:var(--text-2); font-size:.82rem; }
+.lang a:hover { background:#f3f2f1; text-decoration:none; color:var(--text); }
+.lang a.active { color:var(--brand); font-weight:600; }
 
 main { max-width:var(--maxw); margin:2rem auto; padding:0 1.25rem; }
 .page-title { font-size:1.6rem; font-weight:600; margin:.2rem 0 .3rem; }

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Neutral (English) anchor resource. Values equal the keys because the UI keys are the
+       English text; this file must exist in the main assembly so ResourceManager can resolve
+       the ja satellite (without a neutral resource it throws MissingManifestResourceException
+       for every culture and IStringLocalizer falls back to the key). -->
+
+  <!-- Layout / nav -->
+  <data name="Home" xml:space="preserve"><value>Home</value></data>
+  <data name="Publisher admin" xml:space="preserve"><value>Publisher admin</value></data>
+  <data name="Fulfillment plane" xml:space="preserve"><value>Fulfillment plane</value></data>
+  <data name="Experimental teaching sample — not for production use." xml:space="preserve"><value>Experimental teaching sample — not for production use.</value></data>
+
+  <!-- Landing (Index) -->
+  <data name="Activate your subscription" xml:space="preserve"><value>Activate your subscription</value></data>
+  <data name="Review the plan below, then confirm. Activation starts billing." xml:space="preserve"><value>Review the plan below, then confirm. Activation starts billing.</value></data>
+  <data name="Signed in as {0}" xml:space="preserve"><value>Signed in as {0}</value></data>
+  <data name="Activated." xml:space="preserve"><value>Activated.</value></data>
+  <data name="View all subscriptions in the publisher admin →" xml:space="preserve"><value>View all subscriptions in the publisher admin →</value></data>
+  <data name="Confirm activation" xml:space="preserve"><value>Confirm activation</value></data>
+  <data name="Resolved from your marketplace purchase token." xml:space="preserve"><value>Resolved from your marketplace purchase token.</value></data>
+  <data name="Subscription" xml:space="preserve"><value>Subscription</value></data>
+  <data name="Offer" xml:space="preserve"><value>Offer</value></data>
+  <data name="Plan" xml:space="preserve"><value>Plan</value></data>
+  <data name="Quantity" xml:space="preserve"><value>Quantity</value></data>
+  <data name="Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Activate subscription" xml:space="preserve"><value>Activate subscription</value></data>
+  <data name="Nothing to show." xml:space="preserve"><value>Nothing to show.</value></data>
+  <data name="No purchase token was provided. Open this page from the Marketplace 'Configure account' link." xml:space="preserve"><value>No purchase token was provided. Open this page from the Marketplace 'Configure account' link.</value></data>
+  <data name="The purchase could not be resolved." xml:space="preserve"><value>The purchase could not be resolved.</value></data>
+  <data name="The purchase could not be resolved (the token may be invalid or expired)." xml:space="preserve"><value>The purchase could not be resolved (the token may be invalid or expired).</value></data>
+  <data name="Missing subscription details." xml:space="preserve"><value>Missing subscription details.</value></data>
+  <data name="Your subscription is now active." xml:space="preserve"><value>Your subscription is now active.</value></data>
+  <data name="Activation could not be completed. Please retry from the Marketplace." xml:space="preserve"><value>Activation could not be completed. Please retry from the Marketplace.</value></data>
+  <data name="Activation failed. Please try again." xml:space="preserve"><value>Activation failed. Please try again.</value></data>
+
+  <!-- Admin list -->
+  <data name="Publisher admin — subscriptions" xml:space="preserve"><value>Publisher admin — subscriptions</value></data>
+  <data name="Subscriptions" xml:space="preserve"><value>Subscriptions</value></data>
+  <data name="Authoritative state store · read-only view. State changes require explicit confirmation on the detail page." xml:space="preserve"><value>Authoritative state store · read-only view. State changes require explicit confirmation on the detail page.</value></data>
+  <data name="How the subscription lifecycle works" xml:space="preserve"><value>How the subscription lifecycle works</value></data>
+  <data name="Microsoft Marketplace drives the lifecycle. This app is the publisher side: it activates a purchase, then keeps its state store in sync with events Microsoft sends. It never invents state." xml:space="preserve"><value>Microsoft Marketplace drives the lifecycle. This app is the publisher side: it activates a purchase, then keeps its state store in sync with events Microsoft sends. It never invents state.</value></data>
+  <data name="Publisher-initiated" xml:space="preserve"><value>Publisher-initiated</value></data>
+  <data name="This app calls the Fulfillment API." xml:space="preserve"><value>This app calls the Fulfillment API.</value></data>
+  <data name="Resolve → Activate — confirmed here, only from PendingFulfillmentStart. Starts billing." xml:space="preserve"><value>Resolve → Activate — confirmed here, only from PendingFulfillmentStart. Starts billing.</value></data>
+  <data name="Microsoft-initiated (webhook)" xml:space="preserve"><value>Microsoft-initiated (webhook)</value></data>
+  <data name="Arrive as a connection webhook; this app validates it, then updates state." xml:space="preserve"><value>Arrive as a connection webhook; this app validates it, then updates state.</value></data>
+  <data name="Change plan / quantity" xml:space="preserve"><value>Change plan / quantity</value></data>
+  <data name="Suspend / Reinstate (e.g. payment failure / recovery)" xml:space="preserve"><value>Suspend / Reinstate (e.g. payment failure / recovery)</value></data>
+  <data name="Unsubscribe (terminal)" xml:space="preserve"><value>Unsubscribe (terminal)</value></data>
+  <data name="In this demo the Fulfillment API Emulator plays Microsoft. To trigger the webhook events above, open the emulator's Subscriptions tab and act on a subscription — then refresh here to watch the authoritative state follow." xml:space="preserve"><value>In this demo the Fulfillment API Emulator plays Microsoft. To trigger the webhook events above, open the emulator's Subscriptions tab and act on a subscription — then refresh here to watch the authoritative state follow.</value></data>
+  <data name="Lifecycle reference" xml:space="preserve"><value>Lifecycle reference</value></data>
+  <data name="Marketplace subscription" xml:space="preserve"><value>Marketplace subscription</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
+  <data name="State" xml:space="preserve"><value>State</value></data>
+  <data name="Updated (UTC)" xml:space="preserve"><value>Updated (UTC)</value></data>
+  <data name="No subscriptions yet. Activate one from a buyer landing link to see it here." xml:space="preserve"><value>No subscriptions yet. Activate one from a buyer landing link to see it here.</value></data>
+  <data name="Details" xml:space="preserve"><value>Details</value></data>
+
+  <!-- Detail -->
+  <data name="Subscription detail" xml:space="preserve"><value>Subscription detail</value></data>
+  <data name="← All subscriptions" xml:space="preserve"><value>← All subscriptions</value></data>
+  <data name="Created (UTC)" xml:space="preserve"><value>Created (UTC)</value></data>
+  <data name="Activation calls the Fulfillment Activate API and starts billing. Confirm before proceeding." xml:space="preserve"><value>Activation calls the Fulfillment Activate API and starts billing. Confirm before proceeding.</value></data>
+  <data name="No publisher actions available from the current state ({0})." xml:space="preserve"><value>No publisher actions available from the current state ({0}).</value></data>
+  <data name="From here, changes (Suspend, Reinstate, Change plan, Unsubscribe) are Microsoft-initiated and arrive as a connection webhook — this app validates it and updates state. In this demo, trigger them from the emulator's Subscriptions tab, then refresh this page." xml:space="preserve"><value>From here, changes (Suspend, Reinstate, Change plan, Unsubscribe) are Microsoft-initiated and arrive as a connection webhook — this app validates it and updates state. In this demo, trigger them from the emulator's Subscriptions tab, then refresh this page.</value></data>
+  <data name="Subscription activated." xml:space="preserve"><value>Subscription activated.</value></data>
+  <data name="Subscription was already active." xml:space="preserve"><value>Subscription was already active.</value></data>
+  <data name="Subscription not found." xml:space="preserve"><value>Subscription not found.</value></data>
+  <data name="Subscription cannot be activated from its current state." xml:space="preserve"><value>Subscription cannot be activated from its current state.</value></data>
+  <data name="Activation failed while calling the Fulfillment API." xml:space="preserve"><value>Activation failed while calling the Fulfillment API.</value></data>
+  <data name="Unknown result." xml:space="preserve"><value>Unknown result.</value></data>
+</root>

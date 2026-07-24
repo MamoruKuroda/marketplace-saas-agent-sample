@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using SaaSAgentSample.Core.Subscriptions;
 using SaaSAgentSample.Fulfillment;
 using SaaSAgentSample.Web.Services;
@@ -9,8 +10,13 @@ namespace SaaSAgentSample.Web.Pages.Admin;
 public sealed class DetailModel : PageModel
 {
     private readonly AdminService _admin;
+    private readonly IStringLocalizer<SharedResource> _l;
 
-    public DetailModel(AdminService admin) => _admin = admin;
+    public DetailModel(AdminService admin, IStringLocalizer<SharedResource> l)
+    {
+        _admin = admin;
+        _l = l;
+    }
 
     [BindProperty(SupportsGet = true)]
     public Guid Id { get; set; }
@@ -35,16 +41,16 @@ public sealed class DetailModel : PageModel
             var result = await _admin.ActivateAsync(Id, cancellationToken);
             Message = result switch
             {
-                AdminActivationResult.Activated => "Subscription activated.",
-                AdminActivationResult.AlreadyActive => "Subscription was already active.",
-                AdminActivationResult.NotFound => "Subscription not found.",
-                AdminActivationResult.InvalidState => "Subscription cannot be activated from its current state.",
-                _ => "Unknown result.",
+                AdminActivationResult.Activated => _l["Subscription activated."],
+                AdminActivationResult.AlreadyActive => _l["Subscription was already active."],
+                AdminActivationResult.NotFound => _l["Subscription not found."],
+                AdminActivationResult.InvalidState => _l["Subscription cannot be activated from its current state."],
+                _ => _l["Unknown result."],
             };
         }
         catch (FulfillmentApiException)
         {
-            Message = "Activation failed while calling the Fulfillment API.";
+            Message = _l["Activation failed while calling the Fulfillment API."];
         }
 
         Subscription = await _admin.GetSubscriptionAsync(Id, cancellationToken);

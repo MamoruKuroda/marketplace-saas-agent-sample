@@ -1,9 +1,13 @@
+@using System.Globalization
 @{
     var path = (Context.Request.Path.Value ?? "/").ToLowerInvariant();
     var onAdmin = path.StartsWith("/admin");
+    var cur = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    var htmlLang = cur == "ja" ? "ja" : "en";
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@htmlLang">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,16 +17,20 @@
 <body>
     <header class="site-header">
         <div class="bar">
-            <a class="brand" href="/"><span class="logo">M</span><span>Marketplace SaaS sample<small>Fulfillment plane</small></span></a>
+            <a class="brand" href="/"><span class="logo">M</span><span>Marketplace SaaS sample<small>@L["Fulfillment plane"]</small></span></a>
             <nav class="top">
-                <a href="/" class="@(onAdmin ? "" : "active")">Home</a>
-                <a href="/admin" class="@(onAdmin ? "active" : "")">Publisher admin</a>
+                <a href="/" class="@(onAdmin ? "" : "active")">@L["Home"]</a>
+                <a href="/admin" class="@(onAdmin ? "active" : "")">@L["Publisher admin"]</a>
+                <span class="lang">
+                    <a href="/set-culture?culture=en&amp;redirect=@Uri.EscapeDataString(returnUrl)" class="@(cur == "ja" ? "" : "active")">EN</a>
+                    <a href="/set-culture?culture=ja&amp;redirect=@Uri.EscapeDataString(returnUrl)" class="@(cur == "ja" ? "active" : "")">日本語</a>
+                </span>
             </nav>
         </div>
     </header>
     <main>
         @RenderBody()
     </main>
-    <footer class="site-footer">Experimental teaching sample &mdash; not for production use.</footer>
+    <footer class="site-footer">@L["Experimental teaching sample — not for production use."]</footer>
 </body>
 </html>
