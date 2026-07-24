@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using SaaSAgentSample.Fulfillment;
 using SaaSAgentSample.Fulfillment.Models;
 using SaaSAgentSample.Web.Services;
@@ -9,8 +10,13 @@ namespace SaaSAgentSample.Web.Pages;
 public sealed class IndexModel : PageModel
 {
     private readonly LandingService _landing;
+    private readonly IStringLocalizer<SharedResource> _l;
 
-    public IndexModel(LandingService landing) => _landing = landing;
+    public IndexModel(LandingService landing, IStringLocalizer<SharedResource> l)
+    {
+        _landing = landing;
+        _l = l;
+    }
 
     [BindProperty(SupportsGet = true)]
     public string? Token { get; set; }
@@ -25,7 +31,7 @@ public sealed class IndexModel : PageModel
     {
         if (string.IsNullOrWhiteSpace(Token))
         {
-            Message = "No purchase token was provided. Open this page from the Marketplace \"Configure account\" link.";
+            Message = _l["No purchase token was provided. Open this page from the Marketplace 'Configure account' link."];
             return;
         }
 
@@ -34,12 +40,12 @@ public sealed class IndexModel : PageModel
             Resolved = await _landing.ResolveAsync(Token, cancellationToken);
             if (Resolved is null)
             {
-                Message = "The purchase could not be resolved.";
+                Message = _l["The purchase could not be resolved."];
             }
         }
         catch (FulfillmentApiException)
         {
-            Message = "The purchase could not be resolved (the token may be invalid or expired).";
+            Message = _l["The purchase could not be resolved (the token may be invalid or expired)."];
         }
     }
 
@@ -47,7 +53,7 @@ public sealed class IndexModel : PageModel
     {
         if (string.IsNullOrWhiteSpace(subscriptionId) || string.IsNullOrWhiteSpace(planId))
         {
-            Message = "Missing subscription details.";
+            Message = _l["Missing subscription details."];
             return Page();
         }
 
@@ -56,12 +62,12 @@ public sealed class IndexModel : PageModel
             var result = await _landing.ActivateAsync(subscriptionId, planId, quantity, cancellationToken);
             IsActivated = result == LandingActivationResult.Activated;
             Message = IsActivated
-                ? "Your subscription is now active."
-                : "Activation could not be completed. Please retry from the Marketplace.";
+                ? _l["Your subscription is now active."]
+                : _l["Activation could not be completed. Please retry from the Marketplace."];
         }
         catch (FulfillmentApiException)
         {
-            Message = "Activation failed. Please try again.";
+            Message = _l["Activation failed. Please try again."];
         }
 
         return Page();

@@ -1,16 +1,16 @@
 @page
 @model SaaSAgentSample.Web.Pages.IndexModel
 @{
-    ViewData["Title"] = "Activate your subscription";
+    ViewData["Title"] = L["Activate your subscription"].Value;
     var r = Model.Resolved;
     var sub = r?.Subscription;
 }
-<h1 class="page-title">Activate your subscription</h1>
-<p class="subtitle">Review the plan below, then confirm. Activation starts billing.</p>
+<h1 class="page-title">@L["Activate your subscription"]</h1>
+<p class="subtitle">@L["Review the plan below, then confirm. Activation starts billing."]</p>
 
 @if (User?.Identity?.IsAuthenticated == true)
 {
-    <p class="muted">Signed in as @User.Identity!.Name</p>
+    <p class="muted">@L["Signed in as {0}", User.Identity!.Name!]</p>
 }
 
 @if (Model.IsActivated)
@@ -18,22 +18,22 @@
     <div class="banner">
         <span class="ico">&#10003;</span>
         <div>
-            <strong>Activated.</strong> @Model.Message
-            <div style="margin-top:.4rem"><a href="/admin">View all subscriptions in the publisher admin &rarr;</a></div>
+            <strong>@L["Activated."]</strong> @Model.Message
+            <div style="margin-top:.4rem"><a href="/admin">@L["View all subscriptions in the publisher admin →"]</a></div>
         </div>
     </div>
 }
 else if (r is not null)
 {
     <div class="card">
-        <h2>Confirm activation</h2>
-        <p class="hint">Resolved from your marketplace purchase token.</p>
+        <h2>@L["Confirm activation"]</h2>
+        <p class="hint">@L["Resolved from your marketplace purchase token."]</p>
         <dl class="kv">
-            <dt>Subscription</dt><dd>@(r.SubscriptionName ?? sub?.Name)</dd>
-            <dt>Offer</dt><dd>@(r.OfferId ?? sub?.OfferId)</dd>
-            <dt>Plan</dt><dd>@(r.PlanId ?? sub?.PlanId)</dd>
-            <dt>Quantity</dt><dd>@(r.Quantity?.ToString() ?? "—")</dd>
-            <dt>Status</dt><dd><span class="badge pending">@sub?.SaasSubscriptionStatus</span></dd>
+            <dt>@L["Subscription"]</dt><dd>@(r.SubscriptionName ?? sub?.Name)</dd>
+            <dt>@L["Offer"]</dt><dd>@(r.OfferId ?? sub?.OfferId)</dd>
+            <dt>@L["Plan"]</dt><dd>@(r.PlanId ?? sub?.PlanId)</dd>
+            <dt>@L["Quantity"]</dt><dd>@(r.Quantity?.ToString() ?? "—")</dd>
+            <dt>@L["Status"]</dt><dd><span class="badge pending">@sub?.SaasSubscriptionStatus</span></dd>
         </dl>
         <form method="post">
             @Html.AntiForgeryToken()
@@ -43,11 +43,11 @@ else if (r is not null)
             {
                 <input type="hidden" name="quantity" value="@q" />
             }
-            <button type="submit" class="btn primary">Activate subscription</button>
+            <button type="submit" class="btn primary">@L["Activate subscription"]</button>
         </form>
     </div>
 }
 else
 {
-    <div class="card"><p class="muted">@(Model.Message ?? "Nothing to show.")</p></div>
+    <div class="card"><p class="muted">@(Model.Message ?? L["Nothing to show."].Value)</p></div>
 }
