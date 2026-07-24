@@ -28,7 +28,7 @@
 
 | | **ローカルで動かす** | **クラウドにデモをデプロイ** |
 | --- | --- | --- |
-| 目的 | 開発・テスト・お試し | 他の人がブラウザで開ける公開 URL |
+| 目的 | 開発・テスト・お試し | 他の人がブラウザでライフサイクルをひと通りクリック体験できる公開 URL |
 | コマンド | `dotnet run` / `dotnet test` | `azd up` |
 | 状態ストア | **SQLite** — セットアップ不要、どのマシンでも動く（arm64 含む） | **Azure SQL** — 権威あるストア。マネージド ID でパスワードレス接続 |
 | Azure は必要？ | 不要 | 必要（Azure サブスクリプション） |
@@ -61,8 +61,11 @@ dotnet run --project src/SaaSAgentSample.Web
 
 ### クラウドにデモをデプロイ（azd）
 
-1コマンドで Azure をプロビジョニングしてアプリをデプロイし、公開 URL を共有できます。これは
-手順を1つずつ追う [docs/deploy.ja.md](docs/deploy.ja.md) の自動版です。azd が初めてなら
+1コマンドで Azure をプロビジョニングし、3つ — **アプリ**・その **Azure SQL** 状態ストア・
+**Fulfillment API Emulator**（Microsoft のトークン不要なマーケットプレース代役。Azure Container Apps 上）
+— をデプロイします。できあがるのは、購読ライフサイクルをまるごとブラウザでクリック体験できる公開 URL
+です（ローカル準備も実購入も不要）。これは手順を1つずつ追う [docs/deploy.ja.md](docs/deploy.ja.md) の
+自動版です。azd が初めてなら
 [Azure Developer CLI のドキュメント](https://learn.microsoft.com/ja-jp/azure/developer/azure-developer-cli/overview)を参照。
 
 ```bash
@@ -71,15 +74,26 @@ dotnet run --project src/SaaSAgentSample.Web
 azd auth login
 
 azd up      # 環境名・サブスクリプション・リージョンを選ぶ
-            # → App Service ＋ Azure SQL を作成してデプロイ（数分）
-            # → 表示された URL の <url>/admin を開く
+            # → App Service ＋ Azure SQL ＋ エミュレーター（Container Apps）を作成
+            # → 一式をデプロイ（数分）し、アプリとエミュレーターの URL を表示
 
 azd down    # 使い終わったら一括削除
 ```
 
-既定のデモは購入者サインインを**オフ**にしてあるので、Microsoft Entra のアプリ登録なしで
-すぐ `/admin` を開けます。本番寄りの構成（サインインを有効化、各手順の理解）は
-[docs/deploy.ja.md](docs/deploy.ja.md) を参照してください。
+購入者サインインは既定で**オフ**なので、設定は不要 — URL を開くだけです。あとはブラウザから
+ライフサイクル全体を駆動します：
+
+1. **エミュレーターの URL** を開く — Microsoft 代役の Marketplace 購入ページ。プランを選び
+   **Continue** をクリックすると、アプリに購入トークンを渡してアプリのランディングページを開きます。
+2. アプリの**ランディングページ**で、解決された購読内容を確認し **Activate** をクリック —
+   状態が **Subscribed** に。
+3. エミュレーターに戻って **`/subscriptions.html`** を開き、ライフサイクルイベントを駆動 —
+   **Suspend**・**Reinstate**・**Change plan**・**Unsubscribe**（各操作が接続 Webhook を発火）。
+4. アプリの **`/admin`** を開き、権威ある状態が各イベントに追随する様子を確認（エミュレーターの
+   通知遅延のため数秒待つ）。
+
+**実際の**マーケットプレースを相手にした本番寄りの構成（サインイン有効・エミュレーターなし・各手順の
+解説つき）は [docs/deploy.ja.md](docs/deploy.ja.md) を参照してください。
 
 <details>
 <summary>用語（v0・L2・Tier-1 など）</summary>
@@ -96,9 +110,10 @@ azd down    # 使い終わったら一括削除
 
 ## アーキテクチャ
 
-**ローカル**で動かすときは、すべてが 1 台のマシン上で動作します（下図）。**クラウドのデモ**として
-デプロイした場合は、同じアプリが Azure App Service 上で動き、状態ストアは Azure SQL になります
-— クラウド構成は [docs/deploy.ja.md](docs/deploy.ja.md) を参照。
+**ローカル**で動かすときは、すべてが 1 台のマシン上で動作します（下図）。`azd` で**クラウドのデモ**として
+デプロイすると、同じ部品が Azure 上で動きます — アプリは App Service、状態ストアは Azure SQL、
+エミュレーターは Azure Container Apps — つまりクリックできる一連のフローが何もインストールせずに動きます。
+（本番寄りの [docs/deploy.ja.md](docs/deploy.ja.md) は、エミュレーターではなく*実際の*マーケットプレースを対象にします。）
 
 <!-- GitHub の Mermaid は日本語ラベルを見切れさせるため、PNG を事前生成して埋め込み。ソース: docs/images/ja-architecture.mmd -->
 ![アーキテクチャ図（ローカル構成）](docs/images/ja-architecture.png)
@@ -112,7 +127,7 @@ azd down    # 使い終わったら一括削除
 | `src/SaaSAgentSample.Fulfillment` | Fulfillment/Operations API v2 クライアント＋サーバー側 Webhook 検証 |
 | `src/SaaSAgentSample.Web` | 購入者 SSO ランディング・接続 Webhook・パブリッシャー管理 |
 | `tests/SaaSAgentSample.Tests` | ユニット＋統合（合成エンドツーエンド）テスト |
-| `infra/`・`azure.yaml`・`scripts/` | `azd` クラウドデプロイ：App Service ＋ Azure SQL の Bicep と、デプロイ後の DB 権限付与 |
+| `infra/`・`azure.yaml`・`scripts/` | `azd` クラウドデプロイ：App Service ＋ Azure SQL ＋ エミュレーター（Container Apps）の Bicep と、取得/デプロイ後フック |
 
 ## ローカルで動かす
 
@@ -243,7 +258,7 @@ dotnet test --filter FullyQualifiedName~SyntheticL2LifecycleTests
 ここから自動でデプロイされることはありません。
 
 - **1コマンド:** `azd up` — 上の [クラウドにデモをデプロイ](#クラウドにデモをデプロイazd) を参照。
-  `infra/` に定義した内容一式をプロビジョニングし、アプリをデプロイします。
+  `infra/` に定義した内容一式をプロビジョニングし、アプリ**とエミュレーター**をデプロイします（そのままクリック体験できるデモ）。
 - **1ステップずつ:** [docs/deploy.ja.md](docs/deploy.ja.md) が各 `az` コマンド（プロビジョニング・
   マネージド ID による SQL アクセス・アプリ設定・デプロイ・オファーのランディングページと接続 Webhook の
   配線）を1つずつ解説します。各リソースを理解したいときや本番寄りの構成に。

@@ -51,7 +51,8 @@ public sealed class LandingService
                 marketplaceSubscriptionId,
                 resolved.OfferId ?? resolved.Subscription?.OfferId ?? string.Empty,
                 resolved.PlanId ?? resolved.Subscription?.PlanId ?? string.Empty,
-                DateTimeOffset.UtcNow);
+                DateTimeOffset.UtcNow,
+                resolved.SubscriptionName ?? resolved.Subscription?.Name);
 
             await _repository.AddAsync(subscription, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);

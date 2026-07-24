@@ -25,6 +25,9 @@ internal sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subsc
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(s => s.Name)
+            .HasMaxLength(200);
+
         builder.Property(s => s.OfferId)
             .IsRequired()
             .HasMaxLength(200);

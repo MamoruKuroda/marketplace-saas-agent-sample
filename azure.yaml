@@ -17,8 +17,29 @@ services:
     project: ./src/SaaSAgentSample.Web
     language: dotnet
     host: appservice
+  # The Fulfillment API Emulator (Microsoft's token-free marketplace stand-in), so the cloud
+  # demo is interactive end to end: generate a token in its UI, activate on the app's landing
+  # page, then drive webhooks — all in the browser. Its Dockerfile is built remotely in ACR
+  # (remoteBuild) so no local Docker/npm is needed. Source is fetched by the prepackage hook.
+  emulator:
+    project: ./.emulator-src
+    language: docker
+    host: containerapp
+    docker:
+      path: docker/Dockerfile
+      remoteBuild: true
 
 hooks:
+  # Pull the pinned emulator source before packaging (it is not committed to this repo).
+  prepackage:
+    windows:
+      shell: pwsh
+      run: ./scripts/fetch-emulator.ps1
+      continueOnError: false
+    posix:
+      shell: sh
+      run: ./scripts/fetch-emulator.sh
+      continueOnError: false
   # Azure SQL cannot create a contained user for a managed identity via ARM/Bicep alone,
   # so azd runs this once after provisioning. It connects as the Entra admin (you, the
   # deployer) and creates a least-privilege DB user for the web app's managed identity.

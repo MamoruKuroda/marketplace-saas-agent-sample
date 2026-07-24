@@ -29,9 +29,18 @@ param landingClientId string
 @description('Expected webhook JWT audience (optional for the demo).')
 param webhookAudience string
 
+@description('Container image for the emulator. azd builds its Dockerfile in ACR and injects the image on deploy; the placeholder runs until then.')
+param emulatorImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+
 var sqlDatabaseName = 'SaasAgentSample'
 var webAppName = 'app-${resourceToken}'
+var emulatorName = 'emu-${resourceToken}'
 var sqlServerName = 'sql-${resourceToken}'
+var acrName = 'acr${resourceToken}'
+var logAnalyticsName = 'log-${resourceToken}'
+var acaEnvName = 'aca-${resourceToken}'
+// Built-in AcrPull role.
+var acrPullRoleId = subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')
 
 // Public Microsoft Commercial Marketplace app id — a documented constant, not a secret.
 var marketplaceAppId = '20e940b3-4c07-4bc1-a733-45f7c7a3d0e3'
@@ -74,15 +83,126 @@ resource webApp 'Microsoft.Web/sites@2024-04-01' = {
         { name: 'AzureAd__Instance', value: environment().authentication.loginEndpoint }
         { name: 'AzureAd__TenantId', value: 'common' }
         { name: 'AzureAd__ClientId', value: landingClientId }
-        { name: 'Fulfillment__BaseUrl', value: 'https://marketplaceapi.microsoft.com/api' }
+        // Demo: point the app at the deployed emulator (Microsoft's stand-in) so the flow is
+        // interactive. The emulator sends unsigned webhook tokens, so signature enforcement is off.
+        { name: 'Fulfillment__BaseUrl', value: 'https://${emulator.properties.configuration.ingress.fqdn}/api' }
         { name: 'Fulfillment__ApiVersion', value: '2018-08-31' }
+        // Emulator is token-free: identify the publisher via the query param (matches PUBLISHER_ID).
+        { name: 'Fulfillment__PublisherId', value: 'FourthCoffee' }
         { name: 'Fulfillment__Webhook__Audience', value: webhookAudience }
         { name: 'Fulfillment__Webhook__ExpectedAppId', value: marketplaceAppId }
         { name: 'Fulfillment__Webhook__MetadataAddress', value: '${environment().authentication.loginEndpoint}common/v2.0/.well-known/openid-configuration' }
-        { name: 'Fulfillment__Webhook__RequireSignedToken', value: 'true' }
+        { name: 'Fulfillment__Webhook__RequireSignedToken', value: 'false' }
       ]
     }
   }
+}
+
+// --- Fulfillment API Emulator: built in Azure (ACR) and run on Container Apps ---
+// Microsoft's token-free marketplace stand-in. azd builds its Dockerfile remotely in ACR
+// (docker.remoteBuild) and deploys the image here — no local Docker or npm is needed, and
+// dependencies are baked into the image (avoids App Service Node packaging pitfalls).
+
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: logAnalyticsName
+  location: location
+  tags: tags
+  properties: {
+    sku: { name: 'PerGB2018' }
+    retentionInDays: 30
+  }
+}
+
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
+  #disable-next-line BCP334 // resourceToken (uniqueString) is always 13 chars, so acrName is well over the 5-char minimum
+  name: acrName
+  location: location
+  tags: tags
+  sku: { name: 'Basic' }
+  properties: {
+    adminUserEnabled: false
+  }
+}
+
+resource emulatorIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: 'id-emu-${resourceToken}'
+  location: location
+  tags: tags
+}
+
+// Let the emulator's identity pull images from the registry.
+resource acrPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(containerRegistry.id, emulatorIdentity.id, 'AcrPull')
+  scope: containerRegistry
+  properties: {
+    roleDefinitionId: acrPullRoleId
+    principalId: emulatorIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource acaEnv 'Microsoft.App/managedEnvironments@2024-03-01' = {
+  name: acaEnvName
+  location: location
+  tags: tags
+  properties: {
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: logAnalytics.properties.customerId
+        sharedKey: logAnalytics.listKeys().primarySharedKey
+      }
+    }
+  }
+}
+
+resource emulator 'Microsoft.App/containerApps@2024-03-01' = {
+  name: emulatorName
+  location: location
+  // azd matches this tag to the service named "emulator" in azure.yaml.
+  tags: union(tags, { 'azd-service-name': 'emulator' })
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: { '${emulatorIdentity.id}': {} }
+  }
+  properties: {
+    managedEnvironmentId: acaEnv.id
+    configuration: {
+      activeRevisionsMode: 'Single'
+      ingress: {
+        external: true
+        targetPort: 80
+        transport: 'auto'
+      }
+      registries: [
+        {
+          server: containerRegistry.properties.loginServer
+          identity: emulatorIdentity.id
+        }
+      ]
+    }
+    template: {
+      containers: [
+        {
+          name: 'emulator'
+          image: emulatorImage
+          resources: {
+            cpu: json('0.5')
+            memory: '1Gi'
+          }
+          env: [
+            // The emulator POSTs connection webhooks to the app, and its "Continue" button
+            // sends the buyer to the app's landing page (carrying the purchase token).
+            { name: 'WEBHOOK_URL', value: 'https://${webAppName}.azurewebsites.net/api/webhook' }
+            { name: 'LANDING_PAGE_URL', value: 'https://${webAppName}.azurewebsites.net/' }
+            { name: 'PUBLISHER_ID', value: 'FourthCoffee' }
+          ]
+        }
+      ]
+      scale: { minReplicas: 1, maxReplicas: 1 }
+    }
+  }
+  dependsOn: [ acrPull ]
 }
 
 resource sqlServer 'Microsoft.Sql/servers@2023-08-01-preview' = {
@@ -126,6 +246,9 @@ resource sqlDatabase 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
 
 output webAppName string = webApp.name
 output webAppUri string = 'https://${webApp.properties.defaultHostName}'
+output emulatorName string = emulator.name
+output emulatorUri string = 'https://${emulator.properties.configuration.ingress.fqdn}'
+output containerRegistryEndpoint string = containerRegistry.properties.loginServer
 output sqlServerName string = sqlServer.name
 output sqlServerFqdn string = sqlServer.properties.fullyQualifiedDomainName
 output sqlDatabaseName string = sqlDatabase.name

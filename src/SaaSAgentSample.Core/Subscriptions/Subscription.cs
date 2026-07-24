@@ -22,7 +22,8 @@ public sealed class Subscription
         string marketplaceSubscriptionId,
         string offerId,
         string planId,
-        DateTimeOffset createdAt)
+        DateTimeOffset createdAt,
+        string? name = null)
     {
         if (id == Guid.Empty)
         {
@@ -35,6 +36,7 @@ public sealed class Subscription
 
         Id = id;
         MarketplaceSubscriptionId = marketplaceSubscriptionId;
+        Name = name;
         OfferId = offerId;
         PlanId = planId;
         CreatedAt = createdAt;
@@ -49,6 +51,12 @@ public sealed class Subscription
     /// as a string because Microsoft treats it as an opaque identifier.
     /// </summary>
     public string MarketplaceSubscriptionId { get; private set; }
+
+    /// <summary>
+    /// The buyer-friendly subscription name from the Fulfillment API (Resolve), shown in the
+    /// admin UI for correlation. Not authoritative for any transition; may be null.
+    /// </summary>
+    public string? Name { get; private set; }
 
     public string OfferId { get; private set; }
 

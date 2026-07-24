@@ -22,6 +22,10 @@ There are two ways to run it:
   [Commercial Marketplace SaaS API Emulator](https://github.com/microsoft/Commercial-Marketplace-SaaS-API-Emulator)
   in Docker and drive it from its UI.
 
+> **Prefer nothing installed locally?** The [cloud demo](../README.md#deploy-a-cloud-demo-azd)
+> (`azd up`) deploys this same emulator to Azure alongside the app, so you can click through the
+> whole lifecycle in a browser. The steps below are the **local Docker** path.
+
 ---
 
 ## A. Automated synthetic L2 (recommended)

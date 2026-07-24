@@ -18,6 +18,10 @@ if (-not $server -or -not $database -or -not $appName -or -not $serverName -or -
 
 Write-Host "Granting the app's managed identity [$appName] a database user on $server/$database ..."
 
+# azd and az authenticate separately; make sure az targets the same subscription azd used
+# (otherwise the firewall/sqlcmd calls below can hit the wrong subscription/tenant).
+az account set --subscription $env:AZURE_SUBSCRIPTION_ID | Out-Null
+
 # The server firewall only allows Azure services by default; briefly allow this machine to run T-SQL.
 $clientIp = (Invoke-RestMethod -Uri 'https://api.ipify.org').Trim()
 $ruleName = "azd-postprovision-$([int](Get-Date -UFormat %s))"

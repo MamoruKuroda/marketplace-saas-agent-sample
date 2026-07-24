@@ -80,6 +80,12 @@ public sealed class FulfillmentClient : IFulfillmentClient
     {
         var baseUrl = _options.BaseUrl.TrimEnd('/');
         var uri = $"{baseUrl}/saas/{relativePath}?api-version={Uri.EscapeDataString(_options.ApiVersion)}";
+        // The token-free emulator identifies the publisher from this query parameter when no
+        // bearer token is present. Real production calls carry a bearer token instead.
+        if (!string.IsNullOrEmpty(_options.PublisherId))
+        {
+            uri += $"&publisherId={Uri.EscapeDataString(_options.PublisherId)}";
+        }
         var request = new HttpRequestMessage(method, uri);
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         request.Headers.TryAddWithoutValidation("x-ms-requestid", Guid.NewGuid().ToString());

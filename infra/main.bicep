@@ -58,10 +58,12 @@ module resources './resources.bicep' = {
 }
 
 // Consumed by scripts/postprovision.* (azd surfaces outputs as environment variables).
-output AZURE_LOCATION string = location
 output AZURE_RESOURCE_GROUP string = rg.name
 output SERVICE_WEB_NAME string = resources.outputs.webAppName
 output SERVICE_WEB_URI string = resources.outputs.webAppUri
+output SERVICE_EMULATOR_NAME string = resources.outputs.emulatorName
+output SERVICE_EMULATOR_URI string = resources.outputs.emulatorUri
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = resources.outputs.containerRegistryEndpoint
 output AZURE_SQL_SERVER_NAME string = resources.outputs.sqlServerName
 output AZURE_SQL_SERVER_FQDN string = resources.outputs.sqlServerFqdn
 output AZURE_SQL_DATABASE_NAME string = resources.outputs.sqlDatabaseName

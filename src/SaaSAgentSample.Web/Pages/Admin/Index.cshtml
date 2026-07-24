@@ -33,6 +33,7 @@
             <thead>
                 <tr>
                     <th>Marketplace subscription</th>
+                    <th>Name</th>
                     <th>Offer</th>
                     <th>Plan</th>
                     <th>State</th>
@@ -45,6 +46,7 @@
                 {
                     <tr>
                         <td><code>@s.MarketplaceSubscriptionId</code></td>
+                        <td>@(string.IsNullOrEmpty(s.Name) ? "-" : s.Name)</td>
                         <td>@s.OfferId</td>
                         <td>@s.PlanId</td>
                         <td class="state">@s.State</td>
