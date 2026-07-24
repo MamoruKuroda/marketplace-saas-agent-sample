@@ -138,4 +138,17 @@ public class WebhookTokenValidatorTests
 
         Assert.False(result.IsValid);
     }
+
+    [Fact]
+    public async Task Lenient_mode_accepts_missing_token()
+    {
+        // The token-free emulator sends connection webhooks with no Authorization token by
+        // default; dev mode must accept that (the Get Operation stage still authorizes).
+        var options = new WebhookValidationOptions { RequireSignedToken = false };
+        var validator = CreateValidator(CreateKey(), options);
+
+        var result = await validator.ValidateAsync(null);
+
+        Assert.True(result.IsValid);
+    }
 }
