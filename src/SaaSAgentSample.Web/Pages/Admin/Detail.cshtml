@@ -43,7 +43,12 @@
         }
         else
         {
-            <p class="muted">No actions available from the <strong>@s.State</strong> state.</p>
+            <p class="muted">No publisher actions from the <strong>@s.State</strong> state.</p>
+            <p class="hint" style="margin-top:.4rem">
+                From here, changes (Suspend, Reinstate, Change plan, Unsubscribe) are <strong>Microsoft-initiated</strong>
+                and arrive as a connection webhook — this app validates it and updates state. In this demo, trigger them
+                from the emulator's <strong>Subscriptions</strong> tab, then refresh this page.
+            </p>
         }
     </div>
 }
